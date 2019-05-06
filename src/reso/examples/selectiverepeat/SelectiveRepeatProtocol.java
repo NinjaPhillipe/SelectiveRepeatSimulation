@@ -8,6 +8,8 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	
 	private final IPHost host;
 
+	private boolean allPcktSendedOnce;
+
 	private IPAddress dst;
 
 	private int size = 4;
@@ -36,7 +38,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	public void receive(IPInterfaceAdapter src, Datagram datagram) throws Exception {
 
     	SelectiveRepeatMessage msg= (SelectiveRepeatMessage) datagram.getPayload();
-//		System.out.println("receive" + msg);
+		System.out.println("receive" + msg);
 
 		if(!msg.isAck){ // c'est le receveur qui recoit un packet
 
@@ -98,8 +100,10 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 					// reenvoie le paquet
 //					host.getIPLayer().sendData(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num, true));
 				} else {
-					// si le ack n'est pas corrompu
+
+                    // si le ack n'est pas corrompu
 					sendingWindow.setAck(msg.num-send_base,true);
+                    System.out.println("accepted ACK " + msg.num);
 					if(msg.num == send_base)
 						while (sendingWindow.head.ack){
 
@@ -110,11 +114,14 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 							if(buffer.head!=null)
 								sendingWindow.add(buffer.pop());
 
-							send(sendingWindow.size+send_base-1);
+
+                            if(!allPcktSendedOnce) // si tout les paquets n'ont pas encore ete envoyer envoyer le suivant
+                                send(sendingWindow.size+send_base-1);
+							if(buffer.head == null )
+							    allPcktSendedOnce = true;
 
 							System.out.println("\nSENDER WINDOW: \n"+ sendingWindow +"\n");
 						}
-					System.out.println("accepted ACK " + msg.num);
 				}
 			}
 		}
