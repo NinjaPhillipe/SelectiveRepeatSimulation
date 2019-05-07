@@ -17,15 +17,15 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	// SR sender
 	private int send_base = 0;
 	private int next_seq_num = 0;
-	private FifoWindow sendingWindow = new FifoWindow();
+	private FifoWindow<SelectiveRepeatMessage> sendingWindow = new FifoWindow();
 
 	// SR receiver
 	private int recv_base = 0;
-	private FifoWindow receiveWindow = new FifoWindow();
+	private FifoWindow<SelectiveRepeatMessage> receiveWindow = new FifoWindow();
 
 
 	// BUFFER de paquets
-	private FifoBuffer buffer = new FifoBuffer();
+	private FifoBuffer<SelectiveRepeatMessage> buffer = new FifoBuffer();
 
 	public SelectiveRepeatProtocol(IPHost host) {
 		this.host= host;
@@ -105,7 +105,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 					sendingWindow.setAck(msg.num-send_base,true);
                     System.out.println("accepted ACK " + msg.num);
 					if(msg.num == send_base)
-						while (sendingWindow.head.ack){
+						while (sendingWindow.head!=null && sendingWindow.head.ack){
 
 							send_base++;
 							sendingWindow.pop();

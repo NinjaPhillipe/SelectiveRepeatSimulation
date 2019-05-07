@@ -1,12 +1,12 @@
 package reso.examples.selectiverepeat;
 
-public class FifoBuffer {
+public class FifoBuffer <E>{
 
     class Node{
-        public SelectiveRepeatMessage data;
+        public E data;
         public Node next;
         public boolean ack;
-        public Node(SelectiveRepeatMessage data){
+        public Node(E data){
             this.data = data;
         }
     }
@@ -18,35 +18,36 @@ public class FifoBuffer {
 
     }
 
-    public void add(SelectiveRepeatMessage msg){
+    public void add(E data){
         if(head == null){
-            head = new Node(msg);
+            head = new Node(data);
             tail = head;
         }else{
-        tail.next = new Node(msg);
+        tail.next = new Node(data);
         tail = tail.next;
         }
     }
 
-    public SelectiveRepeatMessage pop(){
+    public E pop(){
         if(head !=null){
-            SelectiveRepeatMessage msg = head.data;
+            E data = head.data;
             head = head.next;
-            return msg;
+            return data;
         }
         return null;
     }
 
     public static void main(String[] args){
-        FifoBuffer fif = new FifoBuffer();
+        FifoBuffer<SelectiveRepeatMessage> fif = new FifoBuffer();
         fif.add(new SelectiveRepeatMessage(1));
         fif.add(new SelectiveRepeatMessage(2));
-        System.out.println(fif.head.data);
-        System.out.println(fif.tail.data);
 
-        System.out.println(fif.pop());
+        System.out.println(fif.head.data); // 1
+        System.out.println(fif.tail.data); // 2
 
-        System.out.println(fif.head.data);
+        System.out.println(fif.pop()); // 1
+
+        System.out.println(fif.head.data); //2
 
     }
 

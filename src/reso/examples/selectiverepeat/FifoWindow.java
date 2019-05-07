@@ -1,23 +1,23 @@
 package reso.examples.selectiverepeat;
 
-public class FifoWindow extends FifoBuffer {
+public class FifoWindow<E> extends FifoBuffer<E> {
 
 
     public int size = 0;
 
     @Override
-    public void add(SelectiveRepeatMessage msg){
-        super.add(msg);
+    public void add(E data){
+        super.add(data);
         size++;
     }
 
     @Override
-    public SelectiveRepeatMessage pop(){
+    public E pop(){
         if(head !=null){
-            SelectiveRepeatMessage msg = head.data;
+            E data = head.data;
             head = head.next;
             size--;
-            return msg;
+            return data;
         }
         return null;
     }
@@ -32,7 +32,7 @@ public class FifoWindow extends FifoBuffer {
         }
     }
 
-    public void setData(SelectiveRepeatMessage msg, int i){
+    public void setData(E data, int i){
         Node tmp = head;
 
         while( !(i<size) ){
@@ -42,11 +42,11 @@ public class FifoWindow extends FifoBuffer {
         for(int j = 0 ; j<i ; j++){
             tmp = head.next;
         }
-        tmp.data = msg;
+        tmp.data = data;
 
     }
 
-    public SelectiveRepeatMessage get(int i ){
+    public E get(int i ){
         if(i> size)
             return null;
         Node tmp = head;
