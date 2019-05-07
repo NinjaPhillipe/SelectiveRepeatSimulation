@@ -53,8 +53,8 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 			//                             Si le receveur recoit un paquet                                   //
 			///////////////////////////////////////////////////////////////////////////////////////////////////
 			if(recv_base <= msg.num && msg.num <= recv_base+size-1 ){
-				if(Math.random()<0) {
-					System.out.println("PACKET LOST");
+				if(Math.random()<0.2) {
+					System.out.println("PACKET LOST"+msg);
 				}else {
 					host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num, true));
 //				String data = msg.data;
@@ -105,7 +105,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 
 			// Ajout d'un facteur aléatoire de perte de paquets
-			if (Math.random() < 0) { //
+			if (Math.random() < 0.2) { //
 				System.out.println("ACK not received");
 
 				// reenvoie le paquet
