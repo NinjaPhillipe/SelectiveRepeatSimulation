@@ -78,6 +78,7 @@ extends AbstractScheduler {
     	try {
     		evt.run();
     	} catch (Exception e) {
+    		e.printStackTrace();
     		System.out.println("Scheduler " + String.format("%.6f", getCurrentTime()) + " - " + e.getMessage());
     		System.out.flush();
     		if (stopOnError)

@@ -23,8 +23,9 @@ public class FifoBuffer <E>{
             head = new Node(data);
             tail = head;
         }else{
-        tail.next = new Node(data);
-        tail = tail.next;
+            System.out.println(tail);
+            tail.next = new Node(data);
+            tail = tail.next;
         }
     }
 

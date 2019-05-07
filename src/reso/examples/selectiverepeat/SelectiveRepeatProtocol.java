@@ -10,7 +10,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	
 	private final IPHost host;
 
-	private boolean allPcktSendedOnce;
+//	private boolean allPcktSendedOnce;
 
 	private IPAddress dst;
 
@@ -88,7 +88,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 						}
 					} else {
-						System.out.println("Msg already receive " + msg.num);
+						System.out.println("Packet in Receiver buffer ");
 						receiveWindow.setData(msg, msg.num);
 					}
 				}
@@ -102,47 +102,52 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 			///////////////////////////////////////////////////////////////////////////////////////////////////
 			//                             Si l'envoyeur recoit un ACK                                       //
 			///////////////////////////////////////////////////////////////////////////////////////////////////
-			if(msg.num >=send_base && msg.num <= send_base+size-1) { // si le packet est bien dans la fenetre d'envoi
-				// stop timer
 
-				// Ajout d'un facteur aléatoire de perte de paquets
-				if (Math.random() < 0.2) { //
-					System.out.println("ACK not received");
 
-					// reenvoie le paquet
+			// Ajout d'un facteur aléatoire de perte de paquets
+			if (Math.random() < 0) { //
+				System.out.println("ACK not received");
+
+				// reenvoie le paquet
 //					host.getIPLayer().sendData(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num, true));
-				} else {
+			}
+			else if(msg.num >=send_base && msg.num <= send_base+size-1) { // si le packet est bien dans la fenetre d'envoi
+				// stop timer
+//				timeoutBuffer.get(msg.num-send_base).stop();
 
-                    // si le ack n'est pas corrompu
-					// on set l'ACK a true et on stop le timer
-					sendingWindow.setAck(msg.num-send_base,true);
-					timeoutBuffer.get(msg.num-send_base).stop();
+				// on set l'ACK a true
+				sendingWindow.setAck(msg.num-send_base,true);
 
-                    System.out.println("accepted ACK " + msg.num);
-					if(msg.num == send_base)
-						while (sendingWindow.head!=null && sendingWindow.head.ack){
+				System.out.println("accepted ACK " + msg.num);
+				if(msg.num == send_base) {
+					while (sendingWindow.head != null && sendingWindow.head.ack) {
 
-							send_base++;
-							sendingWindow.pop();
-							TimeoutEvent event = timeoutBuffer.pop();
-							event.stop(); // stop le timer
+						send_base++;
+						// on eneleve le premier element
+						sendingWindow.pop();
+						timeoutBuffer.pop().stop();
 
-							// on rajoute le prochain message du buffer a la fenetre
-							if(buffer.head!=null) {
-								SelectiveRepeatMessage msgTmp = buffer.pop();
-								sendingWindow.add(msgTmp);
-								timeoutBuffer.add(new TimeoutEvent(scheduler,TIMEOUT,msgTmp.num,this));
-								timeoutBuffer.tail.data.start();
-							}
+						// on rajoute le prochain message du buffer a la fenetre
+						if (buffer.head != null) {
+							SelectiveRepeatMessage msgTmp = buffer.pop();
+							sendingWindow.add(msgTmp);
+							if(sendingWindow.size< sendingWindow.size)
+								timeoutBuffer.add(null);
+//							timeoutBuffer.add(new TimeoutEvent(scheduler, TIMEOUT, msgTmp.num, this));
+//							timeoutBuffer.tail.data.start();
 
-
-                            if(!allPcktSendedOnce) // si tout les paquets n'ont pas encore ete envoyer envoyer le suivant
-                                send(sendingWindow.size+send_base-1);
-							if(buffer.head == null )
-							    allPcktSendedOnce = true;
-
-							System.out.println("\nSENDER WINDOW: \n"+ sendingWindow +"\n");
+//							System.out.println("========================================="+sendingWindow.tail.data.num);
+							send(sendingWindow.tail.data.num);
 						}
+
+
+//						if (!allPcktSendedOnce) // si tout les paquets n'ont pas encore ete envoyer envoyer le suivant
+//							send(sendingWindow.size + send_base - 1);
+//						if (buffer.head == null)
+//							allPcktSendedOnce = true;
+
+						System.out.println("\nSENDER WINDOW: \n" + sendingWindow + "\n");
+					}
 				}
 			}
 		}
@@ -175,13 +180,16 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 				// ajoute paquet dans la fenetre
 				sendingWindow.add(msg);
 				// ajoute un timeout
-				timeoutBuffer.add(new TimeoutEvent(scheduler,TIMEOUT,msg.num,this));
-				timeoutBuffer.tail.data.start();
+//				timeoutBuffer.add(new TimeoutEvent(scheduler,TIMEOUT,msg.num,this));
+//				timeoutBuffer.tail.data.start();
 
+//				System.out.println("=============================================\n"+timeoutBuffer);
+//				System.out.println(sendingWindow+"\n=============================================\n");
 
-				host.getIPLayer().send(IPAddress.ANY, dst_, IP_PROTO_SR, msg);
+//				host.getIPLayer().send(IPAddress.ANY, dst_, IP_PROTO_SR, msg);
 
-				System.out.println("Packet send : "+msg);
+				send(i);
+				System.out.println("Packet send : "+i + "  " +sendingWindow.get(i-send_base));
 				// start timer
 				next_seq_num++;
 			}else{
@@ -191,16 +199,27 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 		}
 	}
 
-	public void  send(int n) throws Exception{
+	public void send(int n) throws Exception{
 		if(send_base <= n && n <= send_base+size){
-//			System.out.println("SEND BFFF" + sendingWindow.head.data+ "    " + send_base);
-//			System.out.println("SEND MSG" + sendingWindow.get(n-send_base));
 			host.getIPLayer().send(IPAddress.ANY, dst, IP_PROTO_SR, sendingWindow.get(n-send_base));
-			System.out.println("Packet send : "+sendingWindow.get(n-send_base));
+
+			System.out.println("Packet send : "+n + "  " +sendingWindow.get(n-send_base));
+
+//			if(timeoutBuffer.get(n-send_base)!=null)
+//				timeoutBuffer.get(n-send_base).stop();
+			timeoutBuffer.setData(new TimeoutEvent(scheduler,TIMEOUT,n,this),n-send_base);
 			timeoutBuffer.get(n-send_base).start(); // remets le timer
-			if(n == next_seq_num+1)
-				next_seq_num++;
+			System.out.println(timeoutBuffer.get(n-send_base));
+
+//			if(n == next_seq_num+1)
+			next_seq_num++;
 		}
+	}
+	public void reSend(int n) throws  Exception{
+		System.out.println("Resend packet :"+sendingWindow.get(n-send_base));
+		host.getIPLayer().send(IPAddress.ANY, dst, IP_PROTO_SR, sendingWindow.get(n-send_base));
+		timeoutBuffer.setData(new TimeoutEvent(scheduler,TIMEOUT,n,this),n-send_base);
+		timeoutBuffer.get(n-send_base).start(); // remets le timer
 	}
 	public void init(IPAddress dst) throws  Exception{
 		SelectiveRepeatMessage msg = new SelectiveRepeatMessage(next_seq_num,false,true);

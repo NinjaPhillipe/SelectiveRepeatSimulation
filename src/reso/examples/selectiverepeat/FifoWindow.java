@@ -37,6 +37,10 @@ public class FifoWindow<E> extends FifoBuffer<E> {
     }
 
     public void setData(E data, int i){
+        if(head == null) {
+            head = new Node(data);
+            tail = head;
+        }
         Node tmp = head;
 
         while( !(i<size) ){
@@ -55,9 +59,12 @@ public class FifoWindow<E> extends FifoBuffer<E> {
             return null;
         Node tmp = head;
         for(int j = 0 ; j < i ; j++ ){
+//            System.out.println(tmp.data);
             tmp = tmp.next;
         }
-        return tmp.data;
+        if(tmp !=null)
+            return tmp.data;
+        return null;
     }
 
     public String toString() {
