@@ -29,6 +29,7 @@ public class AppSender
 //        ip.sendData(IPAddress.ANY, dst, SelectiveRepeatProtocol.IP_PROTO_SR, new SelectiveRepeatMessage(1));
 
         proto.sendData(dst,"Send with selective repeat protocol, endl");
+//        proto.sendData(dst,"1--12--23");
 
 //        proto.sendData(dst);
 //        proto.sendData(dst);

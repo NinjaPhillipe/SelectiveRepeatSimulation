@@ -10,11 +10,9 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	
 	private final IPHost host;
 
-//	private boolean allPcktSendedOnce;
-
 	private IPAddress dst;
 
-	private int size = 4;
+	private int size = 2;
 
 	private double TIMEOUT = 1;
 
@@ -45,7 +43,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	public void receive(IPInterfaceAdapter src, Datagram datagram) throws Exception {
 
     	SelectiveRepeatMessage msg= (SelectiveRepeatMessage) datagram.getPayload();
-		System.out.println("receive" + msg);
+		System.out.println("\n +++++++++++++++++++++++++++++++++++++\nreceive" + msg+ "\n------------------\n");
 
 		if(!msg.isAck){ // c'est le receveur qui recoit un packet
 
@@ -57,19 +55,15 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 					System.out.println("PACKET LOST"+msg);
 				}else {
 					host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num, true));
-//				String data = msg.data;
 					receiveWindow.setData(msg, msg.num - recv_base);
-//				System.out.println("reception du package "+msg);
 					if (recv_base == msg.num) {
 						System.out.println("\nRECEIVE WINDOW: \n" + receiveWindow + "\n");
 
 						// delivrer
-						AppReceiver.recv += msg.data;
-						System.out.println("Data delivered : " + msg.data);
+						AppReceiver.recv += receiveWindow.pop().data;
+						receiveWindow.add(null);
 						System.out.println("ReceiverData : " + AppReceiver.recv);
 
-						receiveWindow.pop();
-						receiveWindow.add(null);
 						recv_base++;
 
 						while (receiveWindow.head.data != null) {
@@ -77,15 +71,12 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 							System.out.println("\nRECEIVE WINDOW: \n" + receiveWindow + "\n");
 
 							// delivrer
-							AppReceiver.recv += msg.data;
-							System.out.println("Data delivered : " + msg.data);
+							AppReceiver.recv += receiveWindow.pop().data;
+							receiveWindow.add(null);
+
 							System.out.println("ReceiverData: " + AppReceiver.recv);
 
-							receiveWindow.pop();
-							receiveWindow.add(null);
 							recv_base++;
-
-
 						}
 					} else {
 						System.out.println("Packet in Receiver buffer ");
@@ -166,6 +157,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 		int j = 0;
 		for(int i = 0 ; i < nbPackets ; i++ ){
+			System.out.println(i);
 			String tmp = "";
 			for(int k = 0 ; k < sizeData && j<data.length() ; k++){
 				tmp+= data.toCharArray()[j];
@@ -174,8 +166,9 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 			SelectiveRepeatMessage msg = new SelectiveRepeatMessage(id,tmp);
 			id++;
-
+			System.out.println(next_seq_num+"<"+send_base+"+"+size);
 			if(next_seq_num < send_base + size){
+				System.out.println(i+"ok");
 
 				// ajoute paquet dans la fenetre
 				sendingWindow.add(msg);
@@ -188,14 +181,15 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 //				host.getIPLayer().send(IPAddress.ANY, dst_, IP_PROTO_SR, msg);
 
-				send(i);
-				System.out.println("Packet send : "+i + "  " +sendingWindow.get(i-send_base));
+				send(i-send_base);
+//				System.out.println("Packet send : "+i + "  " +sendingWindow.get(i-send_base));
 				// start timer
-				next_seq_num++;
+//				next_seq_num++;
 			}else{
 				buffer.add(msg);
 			}
 			// ajouter les paquets a un buffer pour pouvoir les envoyer quand la fenetre se decalera
+
 		}
 	}
 
@@ -207,8 +201,9 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 //			if(timeoutBuffer.get(n-send_base)!=null)
 //				timeoutBuffer.get(n-send_base).stop();
-			timeoutBuffer.setData(new TimeoutEvent(scheduler,TIMEOUT,n,this),n-send_base);
-			timeoutBuffer.get(n-send_base).start(); // remets le timer
+			TimeoutEvent tmp = new TimeoutEvent(scheduler,TIMEOUT,n,this);
+			timeoutBuffer.setData(tmp,n-send_base);
+			tmp.start(); // remets le timer
 			System.out.println(timeoutBuffer.get(n-send_base));
 
 //			if(n == next_seq_num+1)
