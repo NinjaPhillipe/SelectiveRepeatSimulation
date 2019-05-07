@@ -50,6 +50,8 @@ public class Demo
 			((IPEthernetAdapter)host2.getIPLayer().getInterfaceByName("eth0")).addARPEntry(IP_ADDR1,MAC_ADDR1);
 			((IPEthernetAdapter)host1.getIPLayer().getInterfaceByName("eth0")).addARPEntry(IP_ADDR2,MAC_ADDR2);
 
+			SelectiveRepeatProtocol.scheduler = scheduler;
+
     		host1.start();
     		host2.start();
 

@@ -1,5 +1,9 @@
 package reso.examples.selectiverepeat;
 
+/**
+ * Fifo buffer with an attribute size
+ * @param <E>
+ */
 public class FifoWindow<E> extends FifoBuffer<E> {
 
 
@@ -26,7 +30,7 @@ public class FifoWindow<E> extends FifoBuffer<E> {
         Node tmp = head;
         if(i<size){
             for(int j = 0 ; j<i ; j++){
-                tmp = head.next;
+                tmp = tmp.next;
             }
             tmp.ack = isAck;
         }
@@ -60,7 +64,7 @@ public class FifoWindow<E> extends FifoBuffer<E> {
         String res = "{";
         Node tmp = head;
         while (tmp != null){
-            res+= ( tmp.data + " , ");
+            res+= ( tmp.data +" " + tmp.ack + " , ");
             tmp = tmp.next;
         }
         res += "}";
