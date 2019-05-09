@@ -37,10 +37,14 @@ public class TimeoutEvent extends AbstractTimer {
     @Override
     public void stop() {
         super.stop();
+        canRun = false;
         System.out.println("STOP TIMER "+ok + " PACKET : "+id);
     }
     public String toString() {
         return "Timer : "+ok +" packet= " + id ;
     }
 
+    public boolean canRun(){
+        return canRun;
+    }
 }
