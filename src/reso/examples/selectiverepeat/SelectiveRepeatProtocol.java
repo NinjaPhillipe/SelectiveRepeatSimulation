@@ -5,6 +5,7 @@ import reso.scheduler.AbstractScheduler;
 
 public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
+	private CongestionControl control ;
 	public static final int IP_PROTO_SR = Datagram.allocateProtocolNumber("SelectiveRepeat");
 	public static AbstractScheduler scheduler;
 	
@@ -12,13 +13,29 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 	private IPAddress dst;
 
-	private int size = 4;
+	private int size = 6;
 
 	private double TIMEOUT = 10;
 
 	//congestion control
 	private int expectedSeq = 0;
 	private int count = 0;
+
+	public void windowControl()
+	{
+		control.control();
+	}
+
+	public void switchToSlowStart()
+	{
+		CongestionControl slowStart = new SlowStart();
+		this.control = slowStart;
+	}
+	public void switchToAdditiveIncrease()
+	{
+		CongestionControl additiveIncrease = new AdditiveIncrease();
+		this.control = additiveIncrease ;
+	}
 
 	// SR sender
 	private int send_base = 0;
@@ -59,7 +76,6 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 					System.out.println("PACKET LOST"+msg);
 				}else {
 					System.out.println("JE RENTRE DANS LA BOUCLE");
-					// si rec_base est egale a msg num alors expected = recv_base+1
 					host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num, recv_base));
 					receiveWindow.setData(msg, msg.num - recv_base);
 					if (recv_base == msg.num) {
@@ -100,8 +116,9 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 			//                             Si l'envoyeur recoit un ACK                                       //
 			///////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 			// Ajout d'un facteur aléatoire de perte de paquets
-			if (Math.random() < 0.1) { //
+			if (Math.random() < 0.2) { //
 				System.out.println("ACK not received");
 
 				// reenvoie le paquet
@@ -251,4 +268,10 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 		/*timeoutBuffer.setData(new TimeoutEvent(scheduler,TIMEOUT,n,this),n-send_base);
 		timeoutBuffer.get(n-send_base).start(); // remets le timer*/
 	}
+
+	public FifoWindow<SelectiveRepeatMessage> getReceiveWindow() {
+		return receiveWindow;
+	}
+
+
 }
