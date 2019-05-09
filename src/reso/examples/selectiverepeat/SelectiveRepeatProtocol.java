@@ -52,7 +52,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 			///////////////////////////////////////////////////////////////////////////////////////////////////
 			if(recv_base <= msg.num && msg.num <= recv_base+size-1 ){
 				if(Math.random()<0.2) {
-//					System.out.println("PACKET LOST"+msg);
+					System.out.println("PACKET LOST"+msg);
 				}else {
 					host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num, recv_base));
 					receiveWindow.setData(msg, msg.num - recv_base);
@@ -79,13 +79,24 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 							recv_base++;
 						}
 					} else {
-//						System.out.println("Packet in Receiver buffer ");
+						System.out.println("Packet in Receiver buffer ");
 						receiveWindow.setData(msg, msg.num);
 					}
 				}
 			}else if(recv_base-size <= msg.num && msg.num <= recv_base-1){
 				// renvoi un ACK qui a du etre perdu
+				System.out.println("PACKET DEJA RECU");
 				host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num,recv_base));
+			} else {
+				System.out.println("\n ");
+				System.out.println(sendingWindow);
+				System.out.println(receiveWindow);
+				System.out.println(timeoutBuffer);
+				System.out.println(buffer);
+				System.out.println("\n ");
+				System.out.println("MON CODEE EST DU CACA "+ (recv_base-size) +" <= "+msg.num+" <= "+(recv_base-1) );
+				System.out.println(AppReceiver.recv);
+				System.exit(1);
 			}
 //			System.out.println("\n is not ack " + msg.num);
 		}else { // si c'est un ACK
@@ -104,7 +115,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 			}
 			else if(msg.num >=send_base && msg.num <= send_base+size-1) { // si le packet est bien dans la fenetre d'envoi
 				// stop timer
-//				timeoutBuffer.get(msg.num-send_base).stop();
+				timeoutBuffer.get(msg.num-send_base).stop();
 
 				// on set l'ACK a true
 				sendingWindow.setAck(msg.num-send_base,true);
@@ -194,7 +205,8 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	}
 
 	public void send(int n) throws Exception{
-		if(send_base <= n && n <= send_base+size){
+//		if(send_base <= n && n <= send_base+size){
+		if(next_seq_num < send_base+size){
 			host.getIPLayer().send(IPAddress.ANY, dst, IP_PROTO_SR, sendingWindow.get(n-send_base));
 
 //			System.out.println("Packet send : "+n + "  " +sendingWindow.get(n-send_base));
