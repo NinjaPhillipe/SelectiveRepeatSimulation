@@ -5,6 +5,7 @@ import reso.scheduler.AbstractScheduler;
 
 public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
+	private CongestionControl control ;
 	public static final int IP_PROTO_SR = Datagram.allocateProtocolNumber("SelectiveRepeat");
 	public static AbstractScheduler scheduler;
 	
@@ -15,6 +16,22 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	private int size = 6;
 
 	private double TIMEOUT = 1;
+
+	public void windowControl()
+	{
+		control.control();
+	}
+
+	public void switchToSlowStart()
+	{
+		CongestionControl slowStart = new SlowStart();
+		this.control = slowStart;
+	}
+	public void switchToAdditiveIncrease()
+	{
+		CongestionControl additiveIncrease = new AdditiveIncrease();
+		this.control = additiveIncrease ;
+	}
 
 	// SR sender
 	private int send_base = 0;
@@ -221,5 +238,9 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 		tmp.start(); // remets le timer
 		/*timeoutBuffer.setData(new TimeoutEvent(scheduler,TIMEOUT,n,this),n-send_base);
 		timeoutBuffer.get(n-send_base).start(); // remets le timer*/
+	}
+
+	public FifoWindow<SelectiveRepeatMessage> getReceiveWindow() {
+		return receiveWindow;
 	}
 }
