@@ -28,6 +28,17 @@ public class FifoBuffer <E>{
             tail = tail.next;
         }
     }
+    public void addHead(E data)
+    {
+        if(head == null){
+            head = new Node(data);
+            tail = head;
+        }else{
+            Node tmp = new Node(data);
+            tmp.next = head;
+            head = tmp;
+        }
+    }
 
     public E pop(){
         if(head !=null){

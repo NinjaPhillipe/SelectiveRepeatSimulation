@@ -9,6 +9,24 @@ public class FifoWindow<E> extends FifoBuffer<E> {
 
     public int size = 0;
 
+
+    public FifoBuffer split(int i)
+    {
+        FifoBuffer<E> buf = new FifoBuffer<>();
+        for (int j = 0 ; j < this.size ; j++)
+            if (j >  i)
+        {
+            buf.add(this.get(j));
+            //pas fini
+        }
+        return buf;
+    }
+
+    public void remove(E data)
+    {
+        //pas fini
+    }
+
     @Override
     public void add(E data){
         super.add(data);
