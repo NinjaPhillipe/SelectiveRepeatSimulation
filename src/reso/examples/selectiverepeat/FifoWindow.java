@@ -22,9 +22,30 @@ public class FifoWindow<E> extends FifoBuffer<E> {
         return buf;
     }
 
-    public void remove(E data)
+    public void remove(int i)
     {
-        //pas fini
+        if (i >= 0 && i <= size -1) {
+            int j = 0;
+            if (i == 0) {
+                Node tmp = head;
+                head = head.next;
+                tmp.next = null;
+            } else {
+                Node tmp = head;
+                while (j < i - 1) {
+                    tmp = tmp.next;
+                    j++;
+                }
+                if (tmp.next == tail) {
+                    tmp.next = null;
+                    tail = tmp;
+                }
+                Node tmp2 = tmp.next;
+                tmp.next = tmp.next.next;
+                tmp2 = null;
+            }
+         size --;
+        }
     }
 
     @Override
