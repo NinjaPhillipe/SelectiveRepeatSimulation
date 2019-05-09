@@ -54,7 +54,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 				if(Math.random()<0.2) {
 					System.out.println("PACKET LOST"+msg);
 				}else {
-					host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num, true));
+					host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num, recv_base));
 					receiveWindow.setData(msg, msg.num - recv_base);
 					if (recv_base == msg.num) {
 						System.out.println("\nRECEIVE WINDOW: \n" + receiveWindow + "\n");
@@ -85,7 +85,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 				}
 			}else if(recv_base-size <= msg.num && msg.num <= recv_base-1){
 				// renvoi un ACK qui a du etre perdu
-				host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num,true));
+				host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num,recv_base));
 			}
 //			System.out.println("\n is not ack " + msg.num);
 		}else { // si c'est un ACK
@@ -166,7 +166,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 			SelectiveRepeatMessage msg = new SelectiveRepeatMessage(id,tmp);
 			id++;
-			System.out.println(next_seq_num+"<"+send_base+"+"+size);
+//			System.out.println(next_seq_num+"<"+send_base+"+"+size);
 			if(next_seq_num < send_base + size){
 				System.out.println(i+"ok");
 

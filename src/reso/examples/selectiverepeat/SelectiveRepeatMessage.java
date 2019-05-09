@@ -9,7 +9,7 @@ implements Message {
 	public boolean isAck = false;
 
 
-	public int exceptedSeq = 0;
+	public int expected = 0;
 
 	public String data;
 
@@ -21,18 +21,19 @@ implements Message {
 		this(num);
 		data = data_;
 	}
-	public SelectiveRepeatMessage(int num , boolean isAck_) {
-		this(num);
-		isAck = isAck_;
-	}
+//	public SelectiveRepeatMessage(int num , boolean isAck_) {
+//		this(num);
+//		isAck = isAck_;
+//	}
 	public SelectiveRepeatMessage(int num ,int exceptedSeq_) {
-		this(num,true);
-		exceptedSeq = exceptedSeq_;
+		this(num);
+		isAck = true;
+		expected = exceptedSeq_;
 	}
 
 	
 	public String toString() {
-		return "SR [num=" + num + " ACK=" + isAck +" DATA=" +data + "]";
+		return "SR [num=" + num + " ACK=" + isAck + " EXPECTED="+expected +" DATA=" +data + "]";
 	}
 
 	@Override
