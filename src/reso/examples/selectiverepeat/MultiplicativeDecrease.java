@@ -4,6 +4,10 @@ import java.util.Stack;
 
 public class MultiplicativeDecrease extends CongestionControl {
 
+    public MultiplicativeDecrease(SelectiveRepeatProtocol srProto){
+        super(srProto);
+    }
+
     @Override
     public void control() {
         FifoWindow window = this.protocol.getReceiveWindow();
