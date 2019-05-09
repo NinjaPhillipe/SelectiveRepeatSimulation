@@ -35,20 +35,6 @@ public class AppSender
 //        proto.sendData(dst);
     }
 
-    public void sendData()
-            throws Exception{
-
-//        proto.init(dst);
-
-//        proto.sendData(dst);
-//        proto.sendData(dst);
-
-//        int i = 0;
-//        while(i < 10){
-//            proto.sendData(dst);
-//            i++;
-//        }
-    }
     
     public void stop() {}
     

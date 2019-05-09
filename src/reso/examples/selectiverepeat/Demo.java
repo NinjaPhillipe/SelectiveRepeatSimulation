@@ -55,8 +55,6 @@ public class Demo
     		host1.start();
     		host2.start();
 
-			sender.sendData();
-
 
     		scheduler.run();
 
