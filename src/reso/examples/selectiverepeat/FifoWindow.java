@@ -40,7 +40,7 @@ public class FifoWindow<E> extends FifoBuffer<E> {
         if(head == null) {
             head = new Node(data);
             tail = head;
-        }
+        }else {
         Node tmp = head;
 
         while( !(i<size) ){
@@ -48,9 +48,9 @@ public class FifoWindow<E> extends FifoBuffer<E> {
         }
 
         for(int j = 0 ; j<i ; j++){
-            tmp = head.next;
+            tmp = tmp.next;
         }
-        tmp.data = data;
+        tmp.data = data;}
 
     }
 

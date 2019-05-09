@@ -57,7 +57,7 @@ public class Demo
 
 
     		scheduler.run();
-
+			System.out.println(AppReceiver.recv);
 
 
 
