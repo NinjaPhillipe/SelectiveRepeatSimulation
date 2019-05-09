@@ -84,7 +84,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 						//receiveWindow.setData(msg, msg.num);
 					}
 				}
-			}else if(msg.num <= recv_base - 1){
+			}else if(recv_base-size <= msg.num && msg.num <= recv_base-1){
 				// renvoi un ACK qui a du etre perdu
 				host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num,recv_base));
 			}
@@ -116,11 +116,10 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 					while (sendingWindow.head != null && sendingWindow.head.ack) {
 
 						send_base++;
-						// on eneleve le premier elementF
+						// on eneleve le premier element
 						sendingWindow.pop();
-						 TimeoutEvent tmp = timeoutBuffer.pop();
-						 System.out.println("" + tmp);
-						tmp.stop();
+						timeoutBuffer.pop().stop();
+
 
 						// on rajoute le prochain message du buffer a la fenetre
 						if (buffer.head != null) {
