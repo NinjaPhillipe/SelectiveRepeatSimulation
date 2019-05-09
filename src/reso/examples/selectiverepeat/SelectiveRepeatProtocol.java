@@ -45,15 +45,16 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
     	SelectiveRepeatMessage msg= (SelectiveRepeatMessage) datagram.getPayload();
 //		System.out.println("\n +++++++++++++++++++++++++++++++++++++\nreceive" + msg+ "\n------------------\n");
 
-		if(!msg.isAck){ // c'est le receveur qui recoit un packet
+		if(!msg.isAck) { // c'est le receveur qui recoit un packet
 
 			///////////////////////////////////////////////////////////////////////////////////////////////////
 			//                             Si le receveur recoit un paquet                                   //
 			///////////////////////////////////////////////////////////////////////////////////////////////////
-			if(recv_base <= msg.num && msg.num <= recv_base+size-1 ){
-				if(Math.random()<0.2) {
-					System.out.println("PACKET LOST"+msg);
-				}else {
+
+			if(Math.random()<0) {
+				System.out.println("PACKET LOST" + msg);
+			}else {
+				if (recv_base <= msg.num && msg.num <= recv_base + size - 1) {
 					host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num, recv_base));
 					receiveWindow.setData(msg, msg.num - recv_base);
 					if (recv_base == msg.num) {
@@ -82,23 +83,25 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 						System.out.println("Packet in Receiver buffer ");
 						receiveWindow.setData(msg, msg.num);
 					}
+
+				} else if (recv_base - size <= msg.num && msg.num <= recv_base - 1) {
+					// renvoi un ACK qui a du etre perdu
+					System.out.println("PACKET DEJA RECU");
+					host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num, recv_base));
+				} else {
+					System.out.println("\n ");
+					System.out.println(sendingWindow);
+					System.out.println(receiveWindow);
+					System.out.println(timeoutBuffer);
+					System.out.println(buffer);
+					System.out.println("\n ");
+					System.out.println("MON CODEE EST DU CACA " + (recv_base - size) + " <= " + msg.num + " <= " + (recv_base - 1));
+					System.out.println(AppReceiver.recv);
+					System.out.println(msg);
+					System.exit(1);
 				}
-			}else if(recv_base-size <= msg.num && msg.num <= recv_base-1){
-				// renvoi un ACK qui a du etre perdu
-				System.out.println("PACKET DEJA RECU");
-				host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num,recv_base));
-			} else {
-				System.out.println("\n ");
-				System.out.println(sendingWindow);
-				System.out.println(receiveWindow);
-				System.out.println(timeoutBuffer);
-				System.out.println(buffer);
-				System.out.println("\n ");
-				System.out.println("MON CODEE EST DU CACA "+ (recv_base-size) +" <= "+msg.num+" <= "+(recv_base-1) );
-				System.out.println(AppReceiver.recv);
-				System.exit(1);
+	//			System.out.println("\n is not ack " + msg.num);
 			}
-//			System.out.println("\n is not ack " + msg.num);
 		}else { // si c'est un ACK
 
 			///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,8 +110,8 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 
 			// Ajout d'un facteur aléatoire de perte de paquets
-			if (Math.random() < 0.2) { //
-//				System.out.println("ACK not received");
+			if (Math.random() < 0) { //
+				System.out.println("ACK LOSt");
 
 				// reenvoie le paquet
 //					host.getIPLayer().sendData(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num, true));
