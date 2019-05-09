@@ -12,7 +12,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 	private IPAddress dst;
 
-	private int size = 2;
+	private int size = 4;
 
 	private double TIMEOUT = 1;
 
@@ -214,6 +214,8 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 		System.out.println("Resend packet :"+sendingWindow.get(n-send_base));
 		host.getIPLayer().send(IPAddress.ANY, dst, IP_PROTO_SR, sendingWindow.get(n-send_base));
 		timeoutBuffer.setData(new TimeoutEvent(scheduler,TIMEOUT,n,this),n-send_base);
+		System.out.println(timeoutBuffer);
+		System.out.println("//// " +(n-send_base));
 		timeoutBuffer.get(n-send_base).start(); // remets le timer
 	}
 }

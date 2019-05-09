@@ -55,13 +55,15 @@ public class FifoWindow<E> extends FifoBuffer<E> {
     }
 
     public E get(int i ){
+
         if(i> size)
             return null;
         Node tmp = head;
         for(int j = 0 ; j < i ; j++ ){
-//            System.out.println(tmp.data);
+            System.out.println(tmp.data);
             tmp = tmp.next;
         }
+        System.out.println("GET RETURN "+tmp.data);
         if(tmp !=null)
             return tmp.data;
         return null;
