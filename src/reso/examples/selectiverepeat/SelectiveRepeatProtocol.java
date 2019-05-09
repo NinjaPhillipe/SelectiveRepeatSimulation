@@ -12,7 +12,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 	private IPAddress dst;
 
-	private int size = 3;
+	private int size = 6;
 
 	private double TIMEOUT = 1;
 
