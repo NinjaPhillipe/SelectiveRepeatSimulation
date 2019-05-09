@@ -15,7 +15,11 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 	private int size = 6;
 
-	private double TIMEOUT = 1;
+	private double TIMEOUT = 10;
+
+	//congestion control
+	private int expectedSeq = 0;
+	private int count = 0;
 
 	public void windowControl()
 	{
@@ -121,6 +125,31 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 //					host.getIPLayer().sendData(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num, true));
 			}
 			else if(msg.num >=send_base && msg.num <= send_base+size-1) { // si le packet est bien dans la fenetre d'envoi
+
+				////////////////////////////////////congestion control/////////////////////////////////////////////
+
+				if( msg.expected == expectedSeq ){
+					count++;
+//					System.out.println("duplicate expected: "+expectedSeq+"  count:"+count);
+				}else {
+//					System.out.println("CANCEL DUPLIC -***********************************************");
+					count= 0;
+					expectedSeq = msg.expected;
+				}
+
+//				if(count == 3)
+//					System.out.println("INFO"+ (timeoutBuffer.get(expectedSeq-send_base).canRun())+" "+( send_base <= expectedSeq && expectedSeq <= send_base+size-1) );
+
+
+				if(count == 3 && timeoutBuffer.get(expectedSeq-send_base).canRun() && ( send_base <= expectedSeq && expectedSeq <= send_base+size-1) ){
+					// on renvoie le paquet
+					System.out.println("RESEND PACKET before timer expiration " + expectedSeq);
+					timeoutBuffer.get(expectedSeq-send_base).stop();
+					reSend(expectedSeq);
+				}
+
+				///////////////////////////////////////////////////////////////////////////////////////////////////
+
 				// stop timer
 				timeoutBuffer.get(msg.num-send_base).stop();
 				System.out.println("STOP TIMER");
@@ -142,8 +171,8 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 						if (buffer.head != null) {
 							SelectiveRepeatMessage msgTmp = buffer.pop();
 							sendingWindow.add(msgTmp);
-							if(sendingWindow.size< sendingWindow.size)
-								timeoutBuffer.add(null);
+//							if(sendingWindow.size< sendingWindow.size)
+//								timeoutBuffer.add(null);
 //							timeoutBuffer.add(new TimeoutEvent(scheduler, TIMEOUT, msgTmp.num, this));
 //							timeoutBuffer.tail.data.start();
 

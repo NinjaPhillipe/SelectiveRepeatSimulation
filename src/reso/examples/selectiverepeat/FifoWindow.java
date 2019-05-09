@@ -75,6 +75,17 @@ public class FifoWindow<E> extends FifoBuffer<E> {
         }
     }
 
+    public boolean isAck(int i){
+        Node tmp = head;
+        if(i<size){
+            for(int j = 0 ; j<i ; j++){
+                tmp = tmp.next;
+            }
+            return tmp.ack;
+        }
+        return false;
+    }
+
     public void setData(E data, int i){
         if(head == null) {
             head = new Node(data);
