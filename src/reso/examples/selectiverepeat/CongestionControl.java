@@ -20,4 +20,17 @@ public  abstract class CongestionControl {
     {
 
     }
+
+    public void ACKDuplicate3Times(){
+        this.sstresh = protocol.getReceiveWindow().size / 2;
+        FifoWindow window = this.protocol.getReceiveWindow();
+        int medium = window.size / 2;
+        this.protocol.switchToAdditiveIncrease();
+        FifoBuffer buf = window.split(medium);
+        buf.fuse(protocol.getBuffer());
+        this.protocol.switchToSlowStart();
+    }
+    public void timeout(){
+
+    }
 }
