@@ -31,7 +31,8 @@ public  abstract class CongestionControl {
 //        this.protocol.switchToSlowStart();
     }
     public void timeout(){
-
+        // set size 1
+        this.protocol.switchToSlowStart();
     }
 
     public int getSstresh() { return sstresh; }

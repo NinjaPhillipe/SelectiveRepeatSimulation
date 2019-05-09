@@ -18,18 +18,25 @@ public class TimeoutEvent extends AbstractTimer {
         id=id_;
         protocol = protocol_;
 
+//        if(count>30)
+//            System.exit(1);
+
         ok = count;
         count++;
 //        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<Timer created<"+ok + " for packet "+id);
     }
 
     public void run() throws Exception{
-        if(!canRun) {
+        if(!canRun || protocol.getSend_base()>id) {
             System.out.println("\n TIMEOUT BROKEN");
             return;
         }
         canRun=false;
         System.out.println("//////////////////////////////TIMEOUT paquet :" + id+ "  timer : "+ok);
+        System.out.println("send base " + protocol.getSend_base());
+        System.out.println("recv base " + protocol.getRecv_base());
+        System.out.println(protocol.getSendingWindow());
+        System.out.println(protocol.getReceiveWindow());
 //        protocol.send(id);
         protocol.reSend(id);
     }
