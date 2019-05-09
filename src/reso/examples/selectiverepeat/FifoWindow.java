@@ -48,7 +48,7 @@ public class FifoWindow<E> extends FifoBuffer<E> {
         }
 
         for(int j = 0 ; j<i ; j++){
-            tmp = head.next;
+            tmp = tmp.next;
         }
         tmp.data = data;
 
