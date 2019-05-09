@@ -16,8 +16,9 @@ public class FifoWindow<E> extends FifoBuffer<E> {
         for (int j = 0 ; j < this.size ; j++)
             if (j >  i)
         {
-            buf.add(this.get(j));
-            //pas fini
+            E data = this.get(j);
+            this.remove(j);
+            buf.add(data);
         }
         return buf;
     }

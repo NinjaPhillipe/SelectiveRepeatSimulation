@@ -40,6 +40,12 @@ public class FifoBuffer <E>{
         }
     }
 
+    public void fuse(FifoBuffer buf)
+    {
+        this.tail.next = buf.head;
+        this.tail = buf.tail;
+    }
+
     public E pop(){
         if(head !=null){
             E data = head.data;

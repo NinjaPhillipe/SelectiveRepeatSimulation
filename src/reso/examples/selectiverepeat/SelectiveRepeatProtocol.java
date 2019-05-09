@@ -272,6 +272,6 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	public FifoWindow<SelectiveRepeatMessage> getReceiveWindow() {
 		return receiveWindow;
 	}
-
+	public FifoBuffer<SelectiveRepeatMessage> getBuffer() {return buffer;}
 
 }
