@@ -24,12 +24,12 @@ public class TimeoutEvent extends AbstractTimer {
     }
 
     public void run() throws Exception{
-        if(!canRun) {
-            System.out.println("\n TIMEOUT BROKEN");
-            return;
-        }
-        canRun=false;
-        System.out.println("//////////////////////////////TIMEOUT paquet :" + id+ "  timer : "+ok);
+//        if(!canRun) {
+////            System.out.println("\n TIMEOUT BROKEN");
+//            return;
+//        }
+//        canRun=false;
+//        System.out.println("//////////////////////////////TIMEOUT paquet :" + id+ "  timer : "+ok);
 //        protocol.send(id);
         protocol.reSend(id);
     }
@@ -37,7 +37,7 @@ public class TimeoutEvent extends AbstractTimer {
     @Override
     public void stop() {
         super.stop();
-        System.out.println("STOP TIMER "+ok + " PACKET : "+id);
+//        System.out.println("STOP TIMER "+ok + " PACKET : "+id);
     }
     public String toString() {
         return "Timer : "+ok +" packet= " + id ;
