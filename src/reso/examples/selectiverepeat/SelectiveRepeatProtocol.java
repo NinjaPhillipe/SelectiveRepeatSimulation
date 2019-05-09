@@ -216,9 +216,4 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 		timeoutBuffer.setData(new TimeoutEvent(scheduler,TIMEOUT,n,this),n-send_base);
 		timeoutBuffer.get(n-send_base).start(); // remets le timer
 	}
-	public void init(IPAddress dst) throws  Exception{
-		SelectiveRepeatMessage msg = new SelectiveRepeatMessage(next_seq_num,false,true);
-		host.getIPLayer().send(IPAddress.ANY, dst, IP_PROTO_SR, msg);
-	}
-
 }

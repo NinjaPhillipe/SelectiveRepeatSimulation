@@ -7,7 +7,10 @@ implements Message {
 
 	public final int num;
 	public boolean isAck = false;
-	public boolean syn = false;
+
+
+	public int exceptedSeq = 0;
+
 	public String data;
 
 
@@ -22,9 +25,9 @@ implements Message {
 		this(num);
 		isAck = isAck_;
 	}
-	public SelectiveRepeatMessage(int num , boolean isAck_,boolean syn_) {
-		this(num,isAck_);
-		syn = syn_;
+	public SelectiveRepeatMessage(int num ,int exceptedSeq_) {
+		this(num,true);
+		exceptedSeq = exceptedSeq_;
 	}
 
 	
