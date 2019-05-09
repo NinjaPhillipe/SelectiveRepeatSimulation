@@ -105,7 +105,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 						//receiveWindow.setData(msg, msg.num);
 					}
 				}
-			}else if(recv_base-size <= msg.num && msg.num <= recv_base-1){
+			}else if(/*recv_base-size <= msg.num &&*/ msg.num <= recv_base-1){
 				// renvoi un ACK qui a du etre perdu
 				host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num,recv_base));
 			}
@@ -191,7 +191,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 						System.out.println("\nSENDER WINDOW: \n" + sendingWindow + "\n");
 					}
 				}
-//				control.control();
+				control.control();
 			}
 		}
 	}
@@ -233,7 +233,8 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 //				System.out.println("=============================================\n"+timeoutBuffer);
 //				System.out.println(sendingWindow+"\n=============================================\n");
 
-//				host.getIPLayer().send(IPAddress.ANY, dst_, IP_PROTO_SR, msg);
+//				host.getIPLayer().send(IPAddress.ANY, dst_, IP	at reso.examples.selectiverepeat.SelectiveRepeatProtocol.receive(SelectiveRepeatProtocol.java:194)
+//_PROTO_SR, msg);
 
 				send(i-send_base);
 //				System.out.println("Packet send : "+i + "  " +sendingWindow.get(i-send_base));
@@ -248,6 +249,8 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	}
 
 	public void send(int n) throws Exception{
+		System.out.println("ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOOOOOOOOOOOOOOR\n"+
+				send_base+ "<="+n+ "&&"+ n +"<="+ (send_base+size) );
 		if(send_base <= n && n <= send_base+size){
 			host.getIPLayer().send(IPAddress.ANY, dst, IP_PROTO_SR, sendingWindow.get(n-send_base));
 
@@ -258,7 +261,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 			TimeoutEvent tmp = new TimeoutEvent(scheduler,TIMEOUT,n,this);
 			timeoutBuffer.setData(tmp,n-send_base);
 			tmp.start(); // remets le timer
-			System.out.println(timeoutBuffer.get(n-send_base));
+//			System.out.println(timeoutBuffer.get(n-send_base));
 
 //			if(n == next_seq_num+1)
 			next_seq_num++;
@@ -274,9 +277,25 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 		timeoutBuffer.get(n-send_base).start(); // remets le timer*/
 	}
 
+
+	public void incrSize(){
+		if(buffer.head!=null){
+			try {
+				SelectiveRepeatMessage tmp = buffer.pop();
+				sendingWindow.add(tmp);
+				this.send(tmp.num);
+				System.out.println("***********************************SE?ND"+tmp.num);
+				size++;
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+
+		}
+	}
+
 	public FifoWindow<SelectiveRepeatMessage> getReceiveWindow() {
 		return receiveWindow;
 	}
 	public FifoBuffer<SelectiveRepeatMessage> getBuffer() {return buffer;}
-
+	public FifoWindow<SelectiveRepeatMessage> getSendingWindow() { return sendingWindow; }
 }

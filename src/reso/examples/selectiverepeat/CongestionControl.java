@@ -4,7 +4,7 @@ public  abstract class CongestionControl {
 
     public abstract void control();
     public SelectiveRepeatProtocol protocol;
-    public int sstresh = 6;
+    public int sstresh = 4;
     public int count = 0;
 
     public CongestionControl(SelectiveRepeatProtocol srProto){
@@ -28,9 +28,11 @@ public  abstract class CongestionControl {
         this.protocol.switchToAdditiveIncrease();
         FifoBuffer buf = window.split(medium);
         buf.fuse(protocol.getBuffer());
-        this.protocol.switchToSlowStart();
+//        this.protocol.switchToSlowStart();
     }
     public void timeout(){
 
     }
+
+    public int getSstresh() { return sstresh; }
 }

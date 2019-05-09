@@ -10,6 +10,14 @@ public class SlowStart extends CongestionControl {
 
     @Override
     public void control() {
+        if( protocol.getSendingWindow().size<this.getSstresh() ){
+            for(int j = 0 ; j < inc ; j++ ){
+                protocol.incrSize();
+            }
+        }
+//        else {
+//            System.exit(1);
+//        }
         inc = inc*2;
     }
 }
