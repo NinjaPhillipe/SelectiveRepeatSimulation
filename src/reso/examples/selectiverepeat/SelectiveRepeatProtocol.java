@@ -13,7 +13,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 	private IPAddress dst;
 
-	private int size = 1;
+	private  static int size = 1;
 
 	private double TIMEOUT = 10;
 
@@ -107,7 +107,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 						//receiveWindow.setData(msg, msg.num);
 					}
 				}
-			}else if(/*recv_base-size <= msg.num &&*/ msg.num <= recv_base-1){
+			}else if(recv_base-size <= msg.num && msg.num <= recv_base-1){
 				// renvoi un ACK qui a du etre perdu
 				host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num,recv_base));
 			}
