@@ -156,6 +156,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 				System.out.println("STOP TIMER");
 				// on set l'ACK a true
 				System.out.println(msg.num);
+
 				sendingWindow.setAck(msg.num-send_base,true);
 
 				System.out.println("accepted ACK " + msg.num);
@@ -190,6 +191,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 						System.out.println("\nSENDER WINDOW: \n" + sendingWindow + "\n");
 					}
 				}
+//				control.control();
 			}
 		}
 	}
@@ -204,6 +206,8 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 		int nbPackets = data.length()/sizeData;
 		if(data.length()%sizeData > 0 )
 			nbPackets++;
+
+		control = new SlowStart(this);
 
 		int j = 0;
 		for(int i = 0 ; i < nbPackets ; i++ ){
