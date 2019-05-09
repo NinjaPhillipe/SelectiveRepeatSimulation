@@ -13,7 +13,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 	private IPAddress dst;
 
-	private int size = 6;
+	private int size = 1;
 
 	private double TIMEOUT = 10;
 
@@ -28,12 +28,12 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 	public void switchToSlowStart()
 	{
-		CongestionControl slowStart = new SlowStart();
+		CongestionControl slowStart = new SlowStart(this);
 		this.control = slowStart;
 	}
 	public void switchToAdditiveIncrease()
 	{
-		CongestionControl additiveIncrease = new AdditiveIncrease();
+		CongestionControl additiveIncrease = new AdditiveIncrease(this);
 		this.control = additiveIncrease ;
 	}
 
@@ -151,10 +151,12 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 				///////////////////////////////////////////////////////////////////////////////////////////////////
 
 				// stop timer
-				timeoutBuffer.get(msg.num-send_base).stop();
+				if(timeoutBuffer.get(msg.num-send_base)!=null)
+					timeoutBuffer.get(msg.num-send_base).stop();
 				System.out.println("STOP TIMER");
 				// on set l'ACK a true
 				System.out.println(msg.num);
+
 				sendingWindow.setAck(msg.num-send_base,true);
 
 				System.out.println("accepted ACK " + msg.num);
@@ -189,6 +191,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 						System.out.println("\nSENDER WINDOW: \n" + sendingWindow + "\n");
 					}
 				}
+//				control.control();
 			}
 		}
 	}
@@ -204,9 +207,11 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 		if(data.length()%sizeData > 0 )
 			nbPackets++;
 
+		control = new SlowStart(this);
+
 		int j = 0;
 		for(int i = 0 ; i < nbPackets ; i++ ){
-			System.out.println(i);
+//			System.out.println(i);
 			String tmp = "";
 			for(int k = 0 ; k < sizeData && j<data.length() ; k++){
 				tmp+= data.toCharArray()[j];
@@ -217,7 +222,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 			id++;
 //			System.out.println(next_seq_num+"<"+send_base+"+"+size);
 			if(next_seq_num < send_base + size){
-				System.out.println(i+"ok");
+//				System.out.println(i+"ok");
 
 				// ajoute paquet dans la fenetre
 				sendingWindow.add(msg);
