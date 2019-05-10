@@ -80,7 +80,9 @@ public class FifoWindow<E> extends FifoBuffer<E> {
         for(int j = 0 ; j<i ; j++){
             tmp = tmp.next;
         }
-        tmp.data = data;}
+//        if(tmp!=null)
+            tmp.data = data;
+        }
 
     }
 
@@ -97,16 +99,6 @@ public class FifoWindow<E> extends FifoBuffer<E> {
         return null;
     }
 
-    public String toString() {
-        String res = "{";
-        Node tmp = head;
-        while (tmp != null){
-            res+= ( tmp.data +" " + tmp.ack + " , ");
-            tmp = tmp.next;
-        }
-        res += "}";
-        return res;
-    }
 
     public static void main ( String [] args)
     {

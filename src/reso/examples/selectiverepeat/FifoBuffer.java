@@ -55,6 +55,17 @@ public class FifoBuffer <E>{
         return null;
     }
 
+    public String toString() {
+        String res = "{";
+        Node tmp = head;
+        while (tmp != null){
+            res+= ( tmp.data +" " + tmp.ack + " , ");
+            tmp = tmp.next;
+        }
+        res += "}";
+        return res;
+    }
+
     public static void main(String[] args){
         FifoBuffer<SelectiveRepeatMessage> fif = new FifoBuffer();
         fif.add(new SelectiveRepeatMessage(1));

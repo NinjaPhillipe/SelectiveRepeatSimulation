@@ -33,29 +33,49 @@ public  abstract class CongestionControl {
     }
     public void timeout(){
         // set size 1
+        System.out.println("INFO BEFORE TIMEOUT EXECUTION \n SENDING WINDOW \n"+protocol.getSendingWindow()+"\n BUFFER \n"+protocol.getBuffer()+"\n");
+
         FifoBuffer tmp = new FifoBuffer();
         tmp.head = protocol.getSendingWindow().head.next;
         tmp.tail = protocol.getSendingWindow().tail;
-        tmp.fuse(protocol.getBuffer());
-        protocol.setBuffer(tmp);
+//        System.out.println(tmp);
+
+        if(tmp.head !=null) {
+            tmp.fuse(protocol.getBuffer());
+            System.out.println("TIMEOUT BUFFER \n " + tmp);
+            protocol.setBuffer(tmp);
+        }
+
         FifoWindow<SelectiveRepeatMessage> pp = new FifoWindow<>();
 /*
         protocol.getSendingWindow().head.next = null;
 */
         pp.add(protocol.getSendingWindow().head.data);
+        System.out.println("TIMEOUT SENDING WINDOW \n "+pp);
         protocol.setSendingWindow(pp);
         //protocol.getSendingWindow().tail = protocol.getSendingWindow().head;
 
-        this.protocol.switchToSlowStart();
         FifoWindow<TimeoutEvent> tim = protocol.getTimeoutBuffer();
         FifoBuffer<TimeoutEvent>.Node tmp2 = tim.head;
         for(int i = 0 ; i< tim.size ; i++){
             tmp2 = tmp2.next;
-            if(tmp2!=null && tmp2.data!=null)
+            if(tmp2!=null && tmp2.data!=null) {
                 tmp2.data.stop();
+//                tmp2.data = null;
+            }
         }
         tim.tail = tim.head;
         tim.head.next = null;
+        tim.size=1;
+
+//        SelectiveRepeatProtocol.setCwnd(1);
+        try{
+            this.protocol.reSend(tim.head.data.id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        this.protocol.switchToSlowStart();
+
     }
 
     public int getSstresh() { return sstresh; }

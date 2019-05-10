@@ -315,6 +315,9 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 		return cwnd;
 	}
 
+	public static void setCwnd(int cwnd) {
+		SelectiveRepeatProtocol.cwnd = cwnd;
+	}
 
 	public void setBuffer(FifoBuffer<SelectiveRepeatMessage> buffer) {
 		this.buffer = buffer;
