@@ -145,7 +145,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 					System.out.println("RESEND PACKET before timer expiration " + expectedSeq);
 					timeoutBuffer.get(expectedSeq-send_base).stop();
 					reSend(expectedSeq);
-//					control.ACKDuplicate3Times();
+					control.ACKDuplicate3Times();
 				}
 
 				///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -299,6 +299,10 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	public FifoBuffer<SelectiveRepeatMessage> getBuffer() {return buffer;}
 	public FifoWindow<SelectiveRepeatMessage> getSendingWindow() { return sendingWindow; }
 
+	public FifoWindow<TimeoutEvent> getTimeoutBuffer() {
+		return timeoutBuffer;
+	}
+
 	public int getSend_base() {
 		return send_base;
 	}
@@ -309,6 +313,19 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 	public static int getCwnd() {
 		return cwnd;
+	}
+
+
+	public void setBuffer(FifoBuffer<SelectiveRepeatMessage> buffer) {
+		this.buffer = buffer;
+	}
+
+	public CongestionControl getControl() {
+		return control;
+	}
+
+	public void setSendingWindow(FifoWindow<SelectiveRepeatMessage> sendingWindow) {
+		this.sendingWindow = sendingWindow;
 	}
 }
 

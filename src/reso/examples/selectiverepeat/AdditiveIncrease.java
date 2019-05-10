@@ -11,9 +11,10 @@ public class AdditiveIncrease extends CongestionControl {
     public void control() {
         double tmp = 1/size;
         size += tmp;
+        System.out.println("ADDITIVE IN _CREASE size :"+size);
         if ((int) size  >protocol.getReceiveWindow().size )
         {
-            protocol.getReceiveWindow().size = (int )size;
+            protocol.incrSize();
         }
     }
 }

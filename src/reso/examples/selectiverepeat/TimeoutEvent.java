@@ -39,6 +39,7 @@ public class TimeoutEvent extends AbstractTimer {
         System.out.println(protocol.getReceiveWindow());
 //        protocol.send(id);
         protocol.reSend(id);
+        protocol.getControl().timeout();
     }
 
     @Override
