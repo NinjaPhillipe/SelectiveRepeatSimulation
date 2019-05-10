@@ -13,13 +13,28 @@ import reso.scheduler.AbstractScheduler;
 import reso.scheduler.Scheduler;
 import reso.utilities.NetworkBuilder;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class Demo
 {
 
 	/* Enable or disable packet capture (can be used to observe ARP messages) */
 	private static final boolean ENABLE_SNIFFER= false;
 
+	public static FileWriter windowSize;
+
     public static void main(String [] args) {
+		try{
+			File file = new File("windowSize.log");
+			file.createNewFile();
+			windowSize = new FileWriter(file);
+
+		}catch (IOException e){
+			e.printStackTrace();
+		}
+
 		AbstractScheduler scheduler= new Scheduler();
 		Network network= new Network(scheduler);
     	try {
@@ -59,7 +74,7 @@ public class Demo
     		scheduler.run();
 			System.out.println(AppReceiver.recv);
 
-
+			windowSize.close();
 
 		} catch (Exception e) {
     		System.err.println(e.getMessage());

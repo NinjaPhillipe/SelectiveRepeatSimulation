@@ -140,12 +140,13 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 //					System.out.println("INFO"+ (timeoutBuffer.get(expectedSeq-send_base).canRun())+" "+( send_base <= expectedSeq && expectedSeq <= send_base+cwnd-1) );
 
 
-				if(count == 3 && timeoutBuffer.get(expectedSeq-send_base).canRun() && ( send_base <= expectedSeq && expectedSeq <= send_base+ cwnd -1) ){
+				if(count == 3  && ( send_base <= expectedSeq && expectedSeq <= send_base+ sendingWindow.size -1) && timeoutBuffer.get(expectedSeq-send_base).canRun() ){
 					// on renvoie le paquet
 					System.out.println("RESEND PACKET before timer expiration " + expectedSeq);
 					timeoutBuffer.get(expectedSeq-send_base).stop();
 					reSend(expectedSeq);
 					control.ACKDuplicate3Times();
+					Demo.windowSize.write(scheduler.getCurrentTime()+"  "+getSendingWindow().size+"\n");
 				}
 
 				///////////////////////////////////////////////////////////////////////////////////////////////////

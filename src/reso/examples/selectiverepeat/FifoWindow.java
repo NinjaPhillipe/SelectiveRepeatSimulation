@@ -1,5 +1,9 @@
 package reso.examples.selectiverepeat;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 /**
  * Fifo buffer with an attribute size
  * @param <E>
@@ -102,16 +106,16 @@ public class FifoWindow<E> extends FifoBuffer<E> {
 
     public static void main ( String [] args)
     {
-    FifoWindow<String> pp = new FifoWindow<>();
-    pp.add("UN");
-    pp.add("deux");
-    pp.add("trois");
-    pp.add("quatre");
-        pp.add("cinq");
-        pp.add("six");
-    System.out.println(pp);
-    FifoWindow<String> ok =pp.split();
-    System.out.println(pp);
-    System.out.println(ok);
+        FifoWindow<String> pp = new FifoWindow<>();
+        pp.add("UN");
+        pp.add("deux");
+        pp.add("trois");
+        pp.add("quatre");
+            pp.add("cinq");
+            pp.add("six");
+        System.out.println(pp);
+        FifoWindow<String> ok =pp.split();
+        System.out.println(pp);
+        System.out.println(ok);
     }
 }
