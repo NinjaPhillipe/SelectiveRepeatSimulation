@@ -9,8 +9,9 @@ public class SlowStart extends CongestionControl {
 
     @Override
     public void control() {
-        if( protocol.getSendingWindow().size<this.getSstresh() ){
+        if( protocol.getSendingWindow().size<CongestionControl.sstresh ){
             protocol.incrSize();
+            protocol.logSize();
         }
         else{
             System.out.println("SWITCH FROM SLOW START TO ADDITiVE INCREASE");

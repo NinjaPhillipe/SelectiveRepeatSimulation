@@ -30,7 +30,7 @@ public class Demo
 			File file = new File("windowSize.log");
 			file.createNewFile();
 			windowSize = new FileWriter(file);
-
+			windowSize.write("0  1\n");
 		}catch (IOException e){
 			e.printStackTrace();
 		}

@@ -3,6 +3,8 @@ package reso.examples.selectiverepeat;
 import reso.ip.*;
 import reso.scheduler.AbstractScheduler;
 
+import java.io.IOException;
+
 public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 	private CongestionControl control ;
@@ -15,27 +17,13 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 	private  static int cwnd = 1;
 
-	private double TIMEOUT = 10;
+	private float packetLostRatio = 0.05f;
+
+	private double TIMEOUT = 1;
 
 	//congestion control
 	private int expectedSeq = 0;
 	private int count = 0;
-
-	public void windowControl()
-	{
-		control.control();
-	}
-
-	public void switchToSlowStart()
-	{
-		CongestionControl slowStart = new SlowStart(this);
-		this.control = slowStart;
-	}
-	public void switchToAdditiveIncrease()
-	{
-		CongestionControl additiveIncrease = new AdditiveIncrease(this);
-		this.control = additiveIncrease ;
-	}
 
 	// SR sender
 	private int send_base = 0;
@@ -74,7 +62,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 			System.out.println("^^^^^^^^^^^^^^\n"+recv_base+ "<="+ msg.num + "&&"+ msg.num +"<=" +(recv_base+ cwnd -1));
 			System.out.println("recv_base "+recv_base+"\n cwnd "+ sendingWindow.size);
 			if(recv_base <= msg.num  && msg.num <= recv_base+ cwnd -1 ){
-				if(Math.random()<0.2) {
+				if(Math.random()<packetLostRatio) {
 					System.out.println("PACKET LOST"+msg);
 				}else {
 					System.out.println("JE RENTRE DANS LA BOUCLE");
@@ -120,7 +108,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 
 			// Ajout d'un facteur aléatoire de perte de paquets
-			if (Math.random() < 0.2) { //
+			if (Math.random() < packetLostRatio) { //
 				System.out.println("ACK not received");
 			}
 			else if(msg.num >=send_base && msg.num <= send_base+ cwnd -1) { // si le packet est bien dans la fenetre d'envoi
@@ -146,7 +134,6 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 					timeoutBuffer.get(expectedSeq-send_base).stop();
 					reSend(expectedSeq);
 					control.ACKDuplicate3Times();
-					Demo.windowSize.write(scheduler.getCurrentTime()+"  "+getSendingWindow().size+"\n");
 				}
 
 				///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -294,6 +281,22 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 		}
 	}
 
+	public void logSize(){
+		try {
+			Demo.windowSize.write(String.format("%.2f",scheduler.getCurrentTime()*1000) +"  "+getSendingWindow().size+"\n");
+		}catch (IOException e){
+			e.printStackTrace();
+		}
+	}
+	public void logSize(double size){
+		try {
+			Demo.windowSize.write(String.format("%.2f",scheduler.getCurrentTime()*1000) +"  "+size+"\n");
+		}catch (IOException e){
+			e.printStackTrace();
+		}
+	}
+
+
 	public FifoWindow<SelectiveRepeatMessage> getReceiveWindow() {
 		return receiveWindow;
 	}
@@ -330,6 +333,21 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 	public void setSendingWindow(FifoWindow<SelectiveRepeatMessage> sendingWindow) {
 		this.sendingWindow = sendingWindow;
+	}
+	public void windowControl()
+	{
+		control.control();
+	}
+
+	public void switchToSlowStart()
+	{
+		CongestionControl slowStart = new SlowStart(this);
+		this.control = slowStart;
+	}
+	public void switchToAdditiveIncrease()
+	{
+		CongestionControl additiveIncrease = new AdditiveIncrease(this);
+		this.control = additiveIncrease ;
 	}
 }
 

@@ -2,7 +2,7 @@ package reso.examples.selectiverepeat;
 
 public class AdditiveIncrease extends CongestionControl {
 
-    double size = protocol.getReceiveWindow().size;
+    double size = protocol.getSendingWindow().size;
     public AdditiveIncrease(SelectiveRepeatProtocol srProto){
         super(srProto);
     }
@@ -15,6 +15,7 @@ public class AdditiveIncrease extends CongestionControl {
         if ((int) size  >protocol.getReceiveWindow().size )
         {
             protocol.incrSize();
+            protocol.logSize(size);
         }
     }
 }
