@@ -10,43 +10,22 @@ public class FifoWindow<E> extends FifoBuffer<E> {
     public int size = 0;
 
 
-    public FifoBuffer split(int i)
+    public FifoWindow<E> split()
     {
-        FifoBuffer<E> buf = new FifoBuffer<>();
-        for (int j = 0 ; j < this.size ; j++)
-            if (j >  i)
-        {
-            E data = this.get(j);
-            this.remove(j);
-            buf.add(data);
-        }
-        return buf;
-    }
-
-    public void remove(int i)
-    {
-        if (i >= 0 && i <= size -1) {
-            int j = 0;
-            if (i == 0) {
-                Node tmp = head;
-                head = head.next;
-                tmp.next = null;
-            } else {
-                Node tmp = head;
-                while (j < i - 1) {
-                    tmp = tmp.next;
-                    j++;
-                }
-                if (tmp.next == tail) {
-                    tmp.next = null;
-                    tail = tmp;
-                }
-                Node tmp2 = tmp.next;
-                tmp.next = tmp.next.next;
-                tmp2 = null;
-            }
-         size --;
-        }
+       int medium = this.size/ 2;
+       FifoWindow<E> window = new FifoWindow<>();
+       int j = 0;
+       Node tmp = head;
+       while ( j < medium -1)
+       {
+           tmp= tmp.next;
+           j++;
+       }
+       window.head = tmp.next;
+       window.tail = this.tail;
+       this.tail = tmp;
+       tail.next = null;
+       return window;
     }
 
     @Override
@@ -129,4 +108,19 @@ public class FifoWindow<E> extends FifoBuffer<E> {
         return res;
     }
 
+    public static void main ( String [] args)
+    {
+    FifoWindow<String> pp = new FifoWindow<>();
+    pp.add("UN");
+    pp.add("deux");
+    pp.add("trois");
+    pp.add("quatre");
+        pp.add("cinq");
+        pp.add("six");
+    System.out.println(pp);
+    FifoWindow<String> ok =pp.split();
+    System.out.println(pp);
+    System.out.println(ok);
+    }
 }
+

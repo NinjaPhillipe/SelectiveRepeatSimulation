@@ -26,7 +26,7 @@ public  abstract class CongestionControl {
         FifoWindow window = this.protocol.getReceiveWindow();
         int medium = window.size / 2;
         this.protocol.switchToAdditiveIncrease();
-        FifoBuffer buf = window.split(medium);
+        FifoBuffer buf = window.split();
         buf.fuse(protocol.getBuffer());
         this.protocol.switchToSlowStart();
     }
