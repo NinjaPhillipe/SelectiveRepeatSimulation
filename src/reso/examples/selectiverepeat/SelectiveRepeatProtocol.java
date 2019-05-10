@@ -19,7 +19,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 	private float packetLostRatio = 0.03f;
 
-	private double TIMEOUT = 0.5;
+	private double TIMEOUT = 1;
 
 	//congestion control
 	private int expectedSeq = 0;
@@ -66,7 +66,6 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 					System.out.println("PACKET LOST "+msg);
 					logMSG("PACKET LOST "+msg);
 				}else {
-					host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.getNum(), recv_base));
 					receiveWindow.setData(msg, msg.getNum() - recv_base);
 					System.out.println("\nRECEIVE WINDOW: \n" + receiveWindow + "\n");
 					logMSG("\nRECEIVE WINDOW: \n" + receiveWindow + "\n");
@@ -97,6 +96,8 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 							recv_base++;
 						}
 					}
+					host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.getNum(), recv_base));
+
 				}
 			}else if(recv_base- cwnd <= msg.getNum() && msg.getNum() <= recv_base-1){
 				// renvoi un ACK qui a du etre perdu
