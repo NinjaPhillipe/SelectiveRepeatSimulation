@@ -24,16 +24,19 @@ public  abstract class CongestionControl {
      * Et de replacer les packets en trop dans le buffer.
      */
     void ACKDuplicate3Times(){
-//        System.out.println("ACK 3 DUPLI");
+        System.out.println("3 ACK DUPLICATE DETECTED ");
         protocol.logMSG("3 ACK DUPLICATE DETECTED ");
         sstresh = protocol.getSendingWindow().size / 2;
         FifoWindow window = this.protocol.getSendingWindow();
         this.protocol.switchToAdditiveIncrease();
 
+        // on split le buffer en deux pour réduire la taille de la fenètre
         FifoBuffer buf = window.split();
+        // on ajoute en tete de buffer les paquets en trop
         buf.fuse(protocol.getBuffer());
         protocol.setBuffer(buf);
 
+        // on split la fenetre de timer en deux pour pouvoir stopper tous les timer qui ne devrait pas se déclencher.
         FifoWindow<TimeoutEvent> timer = protocol.getTimeoutBuffer().split();
         FifoBuffer<TimeoutEvent>.Node tmp = timer.head;
         while(tmp!=null){
@@ -52,23 +55,20 @@ public  abstract class CongestionControl {
      * et on va employer la stratégie Slow Start.
      */
     void timeout(){
-        System.out.println("INFO BEFORE TIMEOUT EXECUTION \n SENDING WINDOW \n"+protocol.getSendingWindow()+"\n BUFFER \n"+protocol.getBuffer()+"\n");
-
         // on mets les packets en trop pour la nouvelle taille de fenetre dans le buffer
+
         FifoBuffer tmp = new FifoBuffer();
         tmp.head = protocol.getSendingWindow().head.next;
         tmp.tail = protocol.getSendingWindow().tail;
         if(tmp.head !=null) {
             tmp.fuse(protocol.getBuffer());
-            System.out.println("TIMEOUT BUFFER \n " + tmp);
+//            System.out.println("TIMEOUT BUFFER \n " + tmp);
             protocol.setBuffer(tmp);
         }
 
 
         FifoWindow<SelectiveRepeatMessage> pp = new FifoWindow<>();
-/*
-        protocol.getSendingWindow().head.next = null;
-*/
+
         pp.add(protocol.getSendingWindow().head.data);
         System.out.println("TIMEOUT SENDING WINDOW \n "+pp);
         protocol.setSendingWindow(pp);

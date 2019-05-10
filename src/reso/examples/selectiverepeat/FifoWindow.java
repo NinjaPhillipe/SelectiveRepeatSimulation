@@ -150,7 +150,7 @@ public class FifoWindow<E> extends FifoBuffer<E> {
             pp.add("cinq");
             pp.add("six");
         System.out.println(pp);
-        FifoWindow<String> ok =pp.split();
+        FifoWindow<String> ok =pp.split(2);
         System.out.println(pp);
         System.out.println(ok);
     }

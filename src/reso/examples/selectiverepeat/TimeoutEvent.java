@@ -29,25 +29,21 @@ public class TimeoutEvent extends AbstractTimer {
         id=id_;
         protocol = protocol_;
 
-//        if(count>30)
-//            System.exit(1);
-
         ok = count;
         count++;
-//        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<Timer created<"+ok + " for packet "+id);
     }
 
+    @Override
+    /**
+     *  Action déclenchée lors du timeout d'un paquet
+     */
     public void run() throws Exception{
         if(!canRun || protocol.getSend_base()>id) {
             System.out.println("\n TIMEOUT BROKEN");
         }else {
             canRun=false;
+            protocol.logMSG("TIMEOUT PAQUET " + id );
             System.out.println("//////////////////////////////TIMEOUT paquet :" + id+ "  timer : "+ok);
-            System.out.println("send base " + protocol.getSend_base());
-            System.out.println("recv base " + protocol.getRecv_base());
-            System.out.println(protocol.getSendingWindow());
-            System.out.println(protocol.getReceiveWindow());
-//        protocol.send(id);
             protocol.reSend(id);
             protocol.getControl().timeout();
         }
@@ -78,9 +74,5 @@ public class TimeoutEvent extends AbstractTimer {
 
     boolean canRun(){
         return canRun;
-    }
-
-    public int getId() {
-        return id;
     }
 }
