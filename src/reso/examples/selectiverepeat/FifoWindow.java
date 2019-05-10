@@ -25,7 +25,31 @@ public class FifoWindow<E> extends FifoBuffer<E> {
        window.tail = this.tail;
        this.tail = tmp;
        tail.next = null;
+       int windowsize =  this.size - this.size/2 ;
+       this.size = this.size /2;
+       window.size = windowsize;
        return window;
+    }
+
+    public FifoWindow<E> split(int index)
+    {
+        FifoWindow<E> window = new FifoWindow<>();
+        int j = 0;
+        Node tmp = head;
+        while ( j < index -1)
+        {
+            tmp= tmp.next;
+            j++;
+        }
+        window.head = tmp.next;
+        window.tail = this.tail;
+        this.tail = tmp;
+        tail.next = null;
+        window.size = this.size - index;
+        this.size -= index;
+
+        return window;
+
     }
 
     @Override
@@ -118,7 +142,7 @@ public class FifoWindow<E> extends FifoBuffer<E> {
         pp.add("cinq");
         pp.add("six");
     System.out.println(pp);
-    FifoWindow<String> ok =pp.split();
+    FifoWindow<String> ok =pp.split(1);
     System.out.println(pp);
     System.out.println(ok);
     }

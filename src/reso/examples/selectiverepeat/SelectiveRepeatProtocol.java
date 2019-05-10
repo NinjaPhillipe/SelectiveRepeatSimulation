@@ -15,7 +15,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 	private  static int cwnd = 1;
 
-	private double TIMEOUT = 10;
+	private double TIMEOUT = 10000000;
 
 	//congestion control
 	private int expectedSeq = 0;
@@ -283,6 +283,20 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 			try {
 				SelectiveRepeatMessage tmp = buffer.pop();
 				sendingWindow.add(tmp);
+				this.send(tmp.num);
+				System.out.println("***********************************SE?ND"+tmp.num);
+				cwnd++;
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+
+		}
+	}
+	public void decrSize(){
+		if(sendingWindow.head!=null){
+			try {
+				SelectiveRepeatMessage tmp = sendingWindow.pop();
+				buffer.add(tmp);
 				this.send(tmp.num);
 				System.out.println("***********************************SE?ND"+tmp.num);
 				cwnd++;
