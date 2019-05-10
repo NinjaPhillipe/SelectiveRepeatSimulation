@@ -123,4 +123,3 @@ public class FifoWindow<E> extends FifoBuffer<E> {
     System.out.println(ok);
     }
 }
-
