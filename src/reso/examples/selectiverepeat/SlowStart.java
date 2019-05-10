@@ -2,7 +2,6 @@ package reso.examples.selectiverepeat;
 
 public class SlowStart extends CongestionControl {
 
-    private int inc = 1;
 
     public SlowStart(SelectiveRepeatProtocol srProto){
         super(srProto);
@@ -11,13 +10,11 @@ public class SlowStart extends CongestionControl {
     @Override
     public void control() {
         if( protocol.getSendingWindow().size<this.getSstresh() ){
-            for(int j = 0 ; j < inc ; j++ ){
-                protocol.incrSize();
-            }
+            protocol.incrSize();
         }
-//        else {
-//            System.exit(1);
-//        }
-        inc = inc*2;
+        else{
+            System.out.println("SWITCH FROM SLOW START TO ADDITiVE INCREASE");
+            protocol.switchToAdditiveIncrease();
+        }
     }
 }
