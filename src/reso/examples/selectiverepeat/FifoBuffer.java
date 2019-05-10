@@ -12,18 +12,18 @@ public class FifoBuffer <E>{
      * l'état de acquittement.
      */
     class Node{
-        public E data;
-        public Node next;
-        public boolean ack = false;
-        public Node(E data){
+        E data;
+        Node next;
+        boolean ack = false;
+        Node(E data){
             this.data = data;
         }
     }
 
-    public Node head;
-    public Node tail;
+    Node head;
+    Node tail;
 
-    public FifoBuffer(){
+    FifoBuffer(){
 
     }
 

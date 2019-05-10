@@ -8,7 +8,7 @@ import java.io.IOException;
 public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 	private CongestionControl control ;
-	public static final int IP_PROTO_SR = Datagram.allocateProtocolNumber("SelectiveRepeat");
+	static final int IP_PROTO_SR = Datagram.allocateProtocolNumber("SelectiveRepeat");
 	public static AbstractScheduler scheduler;
 	
 	private final IPHost host;
@@ -41,7 +41,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	// TIMER
 	private FifoWindow<TimeoutEvent> timeoutBuffer = new FifoWindow<>();
 
-	public SelectiveRepeatProtocol(IPHost host) {
+	SelectiveRepeatProtocol(IPHost host) {
 		this.host= host;
 		for(int i = 0; i < cwnd; i++ ){
 			receiveWindow.add(null);
@@ -185,7 +185,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 		}
 	}
 
-	public void sendData(IPAddress dst_, String data) throws  Exception {
+	void sendData(IPAddress dst_, String data) throws  Exception {
 		dst = dst_;
 
 		int id = next_seq_num;
@@ -256,7 +256,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 			next_seq_num++;
 		}
 	}
-	public void reSend(int n) throws  Exception{
+	void reSend(int n) throws  Exception{
 		System.out.println("Resend packet :"+sendingWindow.get(n-send_base));
 		host.getIPLayer().send(IPAddress.ANY, dst, IP_PROTO_SR, sendingWindow.get(n-send_base));
 		TimeoutEvent tmp = new TimeoutEvent(scheduler,TIMEOUT,n,this);
@@ -267,7 +267,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	}
 
 
-	public void incrSize(){
+	void incrSize(){
 		if(buffer.head!=null){
 			try {
 				SelectiveRepeatMessage tmp = buffer.pop();
@@ -282,14 +282,14 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 		}
 	}
 
-	public void logSize(){
+	void logSize(){
 		try {
 			Demo.windowSize.write(String.format("%.2f",scheduler.getCurrentTime()*1000) +"  "+getSendingWindow().size+"\n");
 		}catch (IOException e){
 			e.printStackTrace();
 		}
 	}
-	public void logSize(double size){
+	void logSize(double size){
 		try {
 			Demo.windowSize.write(String.format("%.2f",scheduler.getCurrentTime()*1000) +"  "+String.format("%.2f",size)+"\n");
 		}catch (IOException e){
@@ -297,22 +297,30 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 		}
 	}
 
+	void logMSG(String msg){
+		try {
+			Demo.logMsg.write(msg+"\n");
+		}catch (IOException e){
+			e.printStackTrace();
+		}
+	}
 
-	public FifoWindow<SelectiveRepeatMessage> getReceiveWindow() {
+
+	FifoWindow<SelectiveRepeatMessage> getReceiveWindow() {
 		return receiveWindow;
 	}
-	public FifoBuffer<SelectiveRepeatMessage> getBuffer() {return buffer;}
-	public FifoWindow<SelectiveRepeatMessage> getSendingWindow() { return sendingWindow; }
+	FifoBuffer<SelectiveRepeatMessage> getBuffer() {return buffer;}
+	FifoWindow<SelectiveRepeatMessage> getSendingWindow() { return sendingWindow; }
 
-	public FifoWindow<TimeoutEvent> getTimeoutBuffer() {
+	FifoWindow<TimeoutEvent> getTimeoutBuffer() {
 		return timeoutBuffer;
 	}
 
-	public int getSend_base() {
+	int getSend_base() {
 		return send_base;
 	}
 
-	public int getRecv_base() {
+	int getRecv_base() {
 		return recv_base;
 	}
 
@@ -324,15 +332,15 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 		SelectiveRepeatProtocol.cwnd = cwnd;
 	}
 
-	public void setBuffer(FifoBuffer<SelectiveRepeatMessage> buffer) {
+	void setBuffer(FifoBuffer<SelectiveRepeatMessage> buffer) {
 		this.buffer = buffer;
 	}
 
-	public CongestionControl getControl() {
+	CongestionControl getControl() {
 		return control;
 	}
 
-	public void setSendingWindow(FifoWindow<SelectiveRepeatMessage> sendingWindow) {
+	void setSendingWindow(FifoWindow<SelectiveRepeatMessage> sendingWindow) {
 		this.sendingWindow = sendingWindow;
 	}
 	public void windowControl()
@@ -340,12 +348,12 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 		control.control();
 	}
 
-	public void switchToSlowStart()
+	void switchToSlowStart()
 	{
 		CongestionControl slowStart = new SlowStart(this);
 		this.control = slowStart;
 	}
-	public void switchToAdditiveIncrease()
+	void switchToAdditiveIncrease()
 	{
 		CongestionControl additiveIncrease = new AdditiveIncrease(this);
 		this.control = additiveIncrease ;

@@ -5,13 +5,13 @@ package reso.examples.selectiverepeat;
  */
 public class AdditiveIncrease extends CongestionControl {
 
-    double size = protocol.getSendingWindow().size;
+    private double size = protocol.getSendingWindow().size;
 
     /**
      * Constructeur de la strategie Additive Repeat
      * @param srProto protocol sur lequel appliquer la congestion
      */
-    public AdditiveIncrease(SelectiveRepeatProtocol srProto){
+    AdditiveIncrease(SelectiveRepeatProtocol srProto){
         super(srProto);
     }
 

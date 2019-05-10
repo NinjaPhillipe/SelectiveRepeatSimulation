@@ -6,18 +6,18 @@ public class SelectiveRepeatMessage
 implements Message {
 
 	private final int num;
-	public boolean isAck = false;
+	boolean isAck = false;
 
 
-	public int expected = 0;
+	int expected = 0;
 
-	public String data;
+	String data;
 
 
-	public SelectiveRepeatMessage(int num) {
+	SelectiveRepeatMessage(int num) {
 		this.num= num;
 	}
-	public SelectiveRepeatMessage(int num , String data_) {
+	SelectiveRepeatMessage(int num, String data_) {
 		this(num);
 		data = data_;
 	}
@@ -25,7 +25,7 @@ implements Message {
 //		this(num);
 //		isAck = isAck_;
 //	}
-	public SelectiveRepeatMessage(int num ,int exceptedSeq_) {
+	SelectiveRepeatMessage(int num, int exceptedSeq_) {
 		this(num);
 		isAck = true;
 		expected = exceptedSeq_;
@@ -42,7 +42,7 @@ implements Message {
 		return Integer.SIZE / 8;
 	}
 
-	public int getNum() {
+	int getNum() {
 		return num;
 	}
 }

@@ -14,7 +14,7 @@ public class TimeoutEvent extends AbstractTimer {
 
     private int ok;
 
-    public int id;
+    int id;
     private SelectiveRepeatProtocol protocol;
 
     /**
@@ -24,7 +24,7 @@ public class TimeoutEvent extends AbstractTimer {
      * @param id_ numero de sequence du paquet sur lequel le timer s'execute.
      * @param protocol_
      */
-    public TimeoutEvent(AbstractScheduler scheduler,double interval,int id_,SelectiveRepeatProtocol protocol_){
+    TimeoutEvent(AbstractScheduler scheduler, double interval, int id_, SelectiveRepeatProtocol protocol_){
         super(scheduler,interval,false);
         id=id_;
         protocol = protocol_;
@@ -40,17 +40,17 @@ public class TimeoutEvent extends AbstractTimer {
     public void run() throws Exception{
         if(!canRun || protocol.getSend_base()>id) {
             System.out.println("\n TIMEOUT BROKEN");
-            return;
-        }
-        canRun=false;
-        System.out.println("//////////////////////////////TIMEOUT paquet :" + id+ "  timer : "+ok);
-        System.out.println("send base " + protocol.getSend_base());
-        System.out.println("recv base " + protocol.getRecv_base());
-        System.out.println(protocol.getSendingWindow());
-        System.out.println(protocol.getReceiveWindow());
+        }else {
+            canRun=false;
+            System.out.println("//////////////////////////////TIMEOUT paquet :" + id+ "  timer : "+ok);
+            System.out.println("send base " + protocol.getSend_base());
+            System.out.println("recv base " + protocol.getRecv_base());
+            System.out.println(protocol.getSendingWindow());
+            System.out.println(protocol.getReceiveWindow());
 //        protocol.send(id);
-        protocol.reSend(id);
-        protocol.getControl().timeout();
+            protocol.reSend(id);
+            protocol.getControl().timeout();
+        }
     }
 
     @Override
@@ -76,7 +76,7 @@ public class TimeoutEvent extends AbstractTimer {
         return scheduler.getCurrentTime()-startTime;
     }
 
-    public boolean canRun(){
+    boolean canRun(){
         return canRun;
     }
 

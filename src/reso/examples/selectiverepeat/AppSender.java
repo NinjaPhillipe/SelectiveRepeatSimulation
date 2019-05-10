@@ -15,17 +15,15 @@ public class AppSender
 	private final IPLayer ip;
     private final IPAddress dst;
 
-    private SelectiveRepeatProtocol proto;
 
-
-    public AppSender(IPHost host, IPAddress dst, int num) {	
+    AppSender(IPHost host, IPAddress dst, int num) {
     	super(host, "sender");
     	this.dst= dst;
     	ip= host.getIPLayer();
     }
 
     public void start() throws Exception{
-        proto = new SelectiveRepeatProtocol((IPHost) host);
+        SelectiveRepeatProtocol proto = new SelectiveRepeatProtocol((IPHost) host);
         ip.addListener(SelectiveRepeatProtocol.IP_PROTO_SR, proto);
 
 //        proto.sendData(dst,"Send with selective repeat protocol, endl");

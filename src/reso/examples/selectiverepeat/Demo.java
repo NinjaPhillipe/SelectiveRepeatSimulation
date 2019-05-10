@@ -22,8 +22,8 @@ public class Demo
 	/* Enable or disable packet capture (can be used to observe ARP messages) */
 	private static final boolean ENABLE_SNIFFER= false;
 
-	public static FileWriter windowSize;
-	public static FileWriter logTimer;
+	static FileWriter windowSize;
+	static FileWriter logMsg;
 
 	/**
 	 * Méthode qui se charge de lancer l démonstration de l'implémentation du partocole sélective repeat
@@ -41,7 +41,7 @@ public class Demo
 
 			File file2 = new File("SRlog.log");
 			file2.createNewFile();
-			logTimer = new FileWriter(file2);
+			logMsg = new FileWriter(file2);
 		}catch (IOException e){
 			e.printStackTrace();
 		}
@@ -86,6 +86,7 @@ public class Demo
     		scheduler.run();
 			System.out.println(AppReceiver.recv);
 
+			logMsg.close();
 			windowSize.close();
 
 		} catch (Exception e) {

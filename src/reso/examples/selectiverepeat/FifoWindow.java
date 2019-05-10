@@ -16,7 +16,7 @@ public class FifoWindow<E> extends FifoBuffer<E> {
      * dans un nouveau fifo
      * @return
      */
-    public FifoWindow<E> split()
+    FifoWindow<E> split()
     {
         int medium = this.size/ 2;
         FifoWindow<E> window = new FifoWindow<>();
@@ -85,7 +85,7 @@ public class FifoWindow<E> extends FifoBuffer<E> {
      * @param i position dans la fifoWindow
      * @param isAck valeur de l'ack a attribuer
      */
-    public void setAck(int i , boolean isAck){
+    void setAck(int i, boolean isAck){
         Node tmp = head;
         if(i<size){
             for(int j = 0 ; j<i ; j++){
@@ -106,7 +106,7 @@ public class FifoWindow<E> extends FifoBuffer<E> {
         return false;
     }
 
-    public void setData(E data, int i){
+    void setData(E data, int i){
         if(head == null) {
             head = new Node(data);
             tail = head;

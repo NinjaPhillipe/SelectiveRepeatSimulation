@@ -13,9 +13,9 @@ public class AppReceiver
 
 	private final IPLayer ip;
 
-	public static String recv = "";
+	static String recv = "";
 
-	public AppReceiver(IPHost host) {
+	AppReceiver(IPHost host) {
 		super(host, "receiver");
 		ip= host.getIPLayer();
     }

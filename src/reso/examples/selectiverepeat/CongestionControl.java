@@ -1,5 +1,8 @@
 package reso.examples.selectiverepeat;
 
+/**
+ * Classe abstraite qui décrit le fonctionnement d'une classe
+ */
 public  abstract class CongestionControl {
 
     public SelectiveRepeatProtocol protocol;
@@ -9,7 +12,7 @@ public  abstract class CongestionControl {
      * Classe qui s'occuper d'instancier une stratégie de controle de congestion.
      * @param srProto
      */
-    public CongestionControl(SelectiveRepeatProtocol srProto){
+    CongestionControl(SelectiveRepeatProtocol srProto){
         protocol = srProto;
     }
 
@@ -20,8 +23,9 @@ public  abstract class CongestionControl {
      * La méthode va diviser la taille de la fenetre d'envoi par deux.
      * Et de replacer les packets en trop dans le buffer.
      */
-    public void ACKDuplicate3Times(){
-        System.out.println("ACK 3 DUPLI");
+    void ACKDuplicate3Times(){
+//        System.out.println("ACK 3 DUPLI");
+        protocol.logMSG("3 ACK DUPLICATE DETECTED ");
         sstresh = protocol.getSendingWindow().size / 2;
         FifoWindow window = this.protocol.getSendingWindow();
         this.protocol.switchToAdditiveIncrease();
@@ -47,7 +51,7 @@ public  abstract class CongestionControl {
      * Lors de son execution la taille de fenetre va etre mise a 1
      * et on va employer la stratégie Slow Start.
      */
-    public void timeout(){
+    void timeout(){
         System.out.println("INFO BEFORE TIMEOUT EXECUTION \n SENDING WINDOW \n"+protocol.getSendingWindow()+"\n BUFFER \n"+protocol.getBuffer()+"\n");
 
         // on mets les packets en trop pour la nouvelle taille de fenetre dans le buffer
