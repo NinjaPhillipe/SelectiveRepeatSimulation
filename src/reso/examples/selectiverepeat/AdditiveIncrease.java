@@ -9,13 +9,17 @@ public class AdditiveIncrease extends CongestionControl {
 
     @Override
     public void control() {
-        double tmp = 1/size;
-        size += tmp;
-        System.out.println("ADDITIVE IN _CREASE size :"+size);
-        if ((int) size  >protocol.getReceiveWindow().size )
-        {
-            protocol.incrSize();
+        if (protocol.getSendingWindow().size == 0)
+            protocol.switchToSlowStart();
+        else {
+            double tmp = 1 / ((float)protocol.getSendingWindow().size);
+            size += tmp;
+            System.out.println("ADDITIVE IN _CREASE size :" + size);
+            if ((int) size > protocol.getSendingWindow().size) {
+                protocol.incrSize();
+            }
             protocol.logSize(size);
+
         }
     }
 }

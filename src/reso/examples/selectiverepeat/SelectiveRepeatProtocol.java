@@ -290,7 +290,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	}
 	public void logSize(double size){
 		try {
-			Demo.windowSize.write(String.format("%.2f",scheduler.getCurrentTime()*1000) +"  "+size+"\n");
+			Demo.windowSize.write(String.format("%.2f",scheduler.getCurrentTime()*1000) +"  "+String.format("%.2f",size)+"\n");
 		}catch (IOException e){
 			e.printStackTrace();
 		}

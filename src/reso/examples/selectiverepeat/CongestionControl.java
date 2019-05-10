@@ -46,7 +46,7 @@ public  abstract class CongestionControl {
             tmp=tmp.next;
         }
 
-        this.protocol.switchToSlowStart();
+        this.protocol.switchToAdditiveIncrease();
         protocol.logSize();
     }
 
