@@ -7,7 +7,6 @@ import reso.ethernet.EthernetFrame;
 import reso.ethernet.EthernetInterface;
 import reso.examples.static_routing.AppSniffer;
 import reso.ip.IPAddress;
-import reso.ip.IPEthernetAdapter;
 import reso.ip.IPHost;
 import reso.scheduler.AbstractScheduler;
 import reso.scheduler.Scheduler;
@@ -24,13 +23,25 @@ public class Demo
 	private static final boolean ENABLE_SNIFFER= false;
 
 	public static FileWriter windowSize;
+	public static FileWriter logTimer;
 
+	/**
+	 * Méthode qui se charge de lancer l démonstration de l'implémentation du partocole sélective repeat
+	 * avec un systeme de congestion comprenant l'Additive increase , multiplicative decrease slowstart
+	 * ainsi qu'une gestion des timeouts.
+	 * @param args
+	 */
     public static void main(String [] args) {
 		try{
+			// init log windowSize
 			File file = new File("windowSize.log");
 			file.createNewFile();
 			windowSize = new FileWriter(file);
 			windowSize.write("0  1\n");
+
+			File file2 = new File("SRlog.log");
+			file2.createNewFile();
+			logTimer = new FileWriter(file2);
 		}catch (IOException e){
 			e.printStackTrace();
 		}
@@ -61,6 +72,7 @@ public class Demo
     		// Connect both interfaces with a 5000km long link
     		new Link<EthernetFrame>(h1_eth0, h2_eth0, 5000000, 100000);
 
+			// ligne a décommenter si la requete arp n'a pas su s'effectuer
 
 //			((IPEthernetAdapter)host2.getIPLayer().getInterfaceByName("eth0")).addARPEntry(IP_ADDR1,MAC_ADDR1);
 //			((IPEthernetAdapter)host1.getIPLayer().getInterfaceByName("eth0")).addARPEntry(IP_ADDR2,MAC_ADDR2);
@@ -81,5 +93,4 @@ public class Demo
     		e.printStackTrace(System.err);
     	}
     }
-
 }

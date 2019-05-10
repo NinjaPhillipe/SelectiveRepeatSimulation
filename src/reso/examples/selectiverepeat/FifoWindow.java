@@ -1,11 +1,7 @@
 package reso.examples.selectiverepeat;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
 /**
- * Fifo buffer with an attribute size
+ * Fifo windows est une extension de FifoBuffer qui permet une gestion de la taille de la fenetre.
  * @param <E>
  */
 public class FifoWindow<E> extends FifoBuffer<E> {
@@ -13,7 +9,13 @@ public class FifoWindow<E> extends FifoBuffer<E> {
 
     public int size = 0;
 
-
+    /**
+     * Permet de séparer une fenetre en deux partie.
+     * La partie de gauche restera dans cette objet
+     * tandis que la partie de droite sera retournée
+     * dans un nouveau fifo
+     * @return
+     */
     public FifoWindow<E> split()
     {
         int medium = this.size/ 2;
@@ -35,6 +37,11 @@ public class FifoWindow<E> extends FifoBuffer<E> {
         return window;
     }
 
+    /**
+     * Idem que le split au dessus mais avec un paramètre
+     * @param index index a partir du quel on doit separer la fifo window
+     * @return
+     */
     public FifoWindow<E> split(int index)
     {
         FifoWindow<E> window = new FifoWindow<>();
@@ -73,6 +80,11 @@ public class FifoWindow<E> extends FifoBuffer<E> {
         return null;
     }
 
+    /**
+     * Permet de mettre une valeur a un ack d'un node en fonction de sa position.
+     * @param i position dans la fifoWindow
+     * @param isAck valeur de l'ack a attribuer
+     */
     public void setAck(int i , boolean isAck){
         Node tmp = head;
         if(i<size){

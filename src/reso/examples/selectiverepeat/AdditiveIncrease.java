@@ -1,25 +1,28 @@
 package reso.examples.selectiverepeat;
 
+/**
+ * Classe qui implémente la stratégie Additive Increase
+ */
 public class AdditiveIncrease extends CongestionControl {
 
     double size = protocol.getSendingWindow().size;
+
+    /**
+     * Constructeur de la strategie Additive Repeat
+     * @param srProto protocol sur lequel appliquer la congestion
+     */
     public AdditiveIncrease(SelectiveRepeatProtocol srProto){
         super(srProto);
     }
 
     @Override
     public void control() {
-        if (protocol.getSendingWindow().size == 0)
-            protocol.switchToSlowStart();
-        else {
-            double tmp = 1 / ((float)protocol.getSendingWindow().size);
-            size += tmp;
-            System.out.println("ADDITIVE IN _CREASE size :" + size);
-            if ((int) size > protocol.getSendingWindow().size) {
-                protocol.incrSize();
-            }
-            protocol.logSize(size);
-
+        double tmp = 1 /size; //((float)protocol.getSendingWindow().size);
+        size += tmp;
+        System.out.println("ADDITIVE IN _CREASE size :" + size);
+        if ((int) size > protocol.getSendingWindow().size) {
+            protocol.incrSize();
         }
+        protocol.logSize(size);
     }
 }

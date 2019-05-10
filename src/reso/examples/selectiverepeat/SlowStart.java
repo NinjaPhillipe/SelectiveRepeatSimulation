@@ -1,8 +1,14 @@
 package reso.examples.selectiverepeat;
 
+/**
+ * Classe qui implémente la strategie de congestion de controle SlowStart.
+ */
 public class SlowStart extends CongestionControl {
 
-
+    /**
+     * Méthode qui permet d'instancier la stratégie Slow Start.
+     * @param srProto protocole sur lequel appliquer la stratégie.
+     */
     public SlowStart(SelectiveRepeatProtocol srProto){
         super(srProto);
     }

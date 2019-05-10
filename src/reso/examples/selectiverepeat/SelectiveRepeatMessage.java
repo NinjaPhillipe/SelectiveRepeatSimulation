@@ -5,7 +5,7 @@ import reso.common.Message;
 public class SelectiveRepeatMessage
 implements Message {
 
-	public final int num;
+	private final int num;
 	public boolean isAck = false;
 
 
@@ -42,4 +42,7 @@ implements Message {
 		return Integer.SIZE / 8;
 	}
 
+	public int getNum() {
+		return num;
+	}
 }

@@ -2,23 +2,15 @@ package reso.examples.selectiverepeat;
 
 public  abstract class CongestionControl {
 
-    public abstract void control();
     public SelectiveRepeatProtocol protocol;
-    public static int sstresh = 4;
-    public int count = 0;
+    static int sstresh = 4;
 
+    /**
+     * Classe qui s'occuper d'instancier une stratégie de controle de congestion.
+     * @param srProto
+     */
     public CongestionControl(SelectiveRepeatProtocol srProto){
         protocol = srProto;
-    }
-
-    public void reset()
-    {
-        this.count = 0;
-    }
-
-    public void changeReceiveWindowSize()
-    {
-
     }
 
     /**
@@ -51,10 +43,11 @@ public  abstract class CongestionControl {
     }
 
     /**
-     *
+     * Methode qui s'occupe de gerer le cas d'un timeout.
+     * Lors de son execution la taille de fenetre va etre mise a 1
+     * et on va employer la stratégie Slow Start.
      */
     public void timeout(){
-        // set size 1
         System.out.println("INFO BEFORE TIMEOUT EXECUTION \n SENDING WINDOW \n"+protocol.getSendingWindow()+"\n BUFFER \n"+protocol.getBuffer()+"\n");
 
         // on mets les packets en trop pour la nouvelle taille de fenetre dans le buffer
@@ -100,4 +93,10 @@ public  abstract class CongestionControl {
         this.protocol.switchToSlowStart();
 
     }
+
+    /**
+     * Methode qui s'occupe de gerer la taille des fenetres a l'aide de la congestion.
+     */
+    public abstract void control();
+
 }

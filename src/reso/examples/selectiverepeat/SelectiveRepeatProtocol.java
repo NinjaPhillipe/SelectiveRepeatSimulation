@@ -59,16 +59,16 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 			///////////////////////////////////////////////////////////////////////////////////////////////////
 			//                             Si le receveur recoit un paquet                                   //
 			///////////////////////////////////////////////////////////////////////////////////////////////////
-			System.out.println("^^^^^^^^^^^^^^\n"+recv_base+ "<="+ msg.num + "&&"+ msg.num +"<=" +(recv_base+ cwnd -1));
+//			System.out.println("^^^^^^^^^^^^^^\n"+recv_base+ "<="+ msg.num + "&&"+ msg.num +"<=" +(recv_base+ cwnd -1));
 			System.out.println("recv_base "+recv_base+"\n cwnd "+ sendingWindow.size);
-			if(recv_base <= msg.num  && msg.num <= recv_base+ cwnd -1 ){
+			if(recv_base <= msg.getNum()  && msg.getNum() <= recv_base+ cwnd -1 ){
 				if(Math.random()<packetLostRatio) {
 					System.out.println("PACKET LOST"+msg);
 				}else {
 					System.out.println("JE RENTRE DANS LA BOUCLE");
-					host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num, recv_base));
-					receiveWindow.setData(msg, msg.num - recv_base);
-					if (recv_base == msg.num) {
+					host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.getNum(), recv_base));
+					receiveWindow.setData(msg, msg.getNum() - recv_base);
+					if (recv_base == msg.getNum()) {
 						System.out.println("\nRECEIVE WINDOW: \n" + receiveWindow + "\n");
 
 						// delivrer
@@ -95,9 +95,9 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 						//receiveWindow.setData(msg, msg.num);
 					}
 				}
-			}else if(recv_base- cwnd <= msg.num && msg.num <= recv_base-1){
+			}else if(recv_base- cwnd <= msg.getNum() && msg.getNum() <= recv_base-1){
 				// renvoi un ACK qui a du etre perdu
-				host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.num,recv_base));
+				host.getIPLayer().send(IPAddress.ANY, datagram.src, IP_PROTO_SR, new SelectiveRepeatMessage(msg.getNum(),recv_base));
 			}
 //			System.out.println("\n is not ack " + msg.num);
 		}else { // si c'est un ACK
@@ -111,7 +111,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 			if (Math.random() < packetLostRatio) { //
 				System.out.println("ACK not received");
 			}
-			else if(msg.num >=send_base && msg.num <= send_base+ cwnd -1) { // si le packet est bien dans la fenetre d'envoi
+			else if(msg.getNum() >=send_base && msg.getNum() <= send_base+ cwnd -1) { // si le packet est bien dans la fenetre d'envoi
 
 				////////////////////////////////////congestion control/////////////////////////////////////////////
 
@@ -139,17 +139,19 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 				///////////////////////////////////////////////////////////////////////////////////////////////////
 
 				// stop timer
-				if(timeoutBuffer.get(msg.num-send_base)!=null)
-					timeoutBuffer.get(msg.num-send_base).stop();
+				if(timeoutBuffer.get(msg.getNum()-send_base)!=null)
+					timeoutBuffer.get(msg.getNum()-send_base).stop();
 				System.out.println("STOP TIMER");
 				// on set l'ACK a true
-				System.out.println(msg.num);
+				System.out.println(msg.getNum());
 
-				sendingWindow.setAck(msg.num-send_base,true);
+				sendingWindow.setAck(msg.getNum()-send_base,true);
 
-				System.out.println("accepted ACK " + msg.num);
-				if(msg.num == send_base) {
+				System.out.println("accepted ACK " + msg.getNum());
+				if(msg.getNum() == send_base) {
 					while (sendingWindow.head != null && sendingWindow.head.ack) {
+
+						control.control();
 
 						send_base++;
 						// on eneleve le premier element
@@ -167,7 +169,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 //							timeoutBuffer.tail.data.start();
 
 //							System.out.println("========================================="+sendingWindow.tail.data.num);
-							send(sendingWindow.tail.data.num);
+							send(sendingWindow.tail.data.getNum());
 						}
 
 
@@ -179,7 +181,6 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 						System.out.println("\nSENDER WINDOW: \n" + sendingWindow + "\n");
 					}
 				}
-				control.control();
 			}
 		}
 	}
@@ -271,8 +272,8 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 			try {
 				SelectiveRepeatMessage tmp = buffer.pop();
 				sendingWindow.add(tmp);
-				this.send(tmp.num);
-				System.out.println("***********************************SE?ND"+tmp.num);
+				this.send(tmp.getNum());
+				System.out.println("***********************************SE?ND"+tmp.getNum());
 				cwnd++;
 			}catch (Exception e){
 				e.printStackTrace();

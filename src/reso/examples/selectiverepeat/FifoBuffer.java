@@ -1,7 +1,16 @@
 package reso.examples.selectiverepeat;
 
+/**
+ * classe qui représente un buffer de type.
+ * First In First Out.
+ * @param <E>
+ */
 public class FifoBuffer <E>{
 
+    /**
+     * Inner class qui s'occupe de garder en mémoire un paquet ainsi que
+     * l'état de acquittement.
+     */
     class Node{
         public E data;
         public Node next;
@@ -18,6 +27,10 @@ public class FifoBuffer <E>{
 
     }
 
+    /**
+     * Méthode qui permet d'ajouter un élément au buffer fifo
+     * @param data
+     */
     public void add(E data){
         if(head == null){
             head = new Node(data);
@@ -28,24 +41,25 @@ public class FifoBuffer <E>{
             tail = tail.next;
         }
     }
-    public void addHead(E data)
-    {
-        if(head == null){
-            head = new Node(data);
-            tail = head;
-        }else{
-            Node tmp = new Node(data);
-            tmp.next = head;
-            head = tmp;
-        }
-    }
 
+    /**
+     * permet de fusionner deux buffer fifo
+     * en ajoutant le buffer passer en paramètre a
+     * la fin du buffer actuel.
+     * @param buf
+     */
     public void fuse(FifoBuffer buf)
     {
         this.tail.next = buf.head;
         this.tail = buf.tail;
     }
 
+    /**
+     * Permet de détacher l'élément en tete du buffer fifo.
+     * L'élément sera retirer du buffer.
+     *
+     * @return
+     */
     public E pop(){
         if(head !=null){
             E data = head.data;

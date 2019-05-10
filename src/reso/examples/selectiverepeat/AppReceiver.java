@@ -4,6 +4,9 @@ import reso.common.AbstractApplication;
 import reso.ip.IPHost;
 import reso.ip.IPLayer;
 
+/**
+ * Classe qui recevra les données
+ */
 public class AppReceiver
 	extends AbstractApplication
 {
