@@ -19,8 +19,6 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 	private float packetLostRatio = 0.03f;
 
-	private double TIMEOUT = 1;
-
 	//congestion control
 	private int expectedSeq = 0;
 	private int count = 0;
@@ -40,6 +38,13 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 	// TIMER
 	private FifoWindow<TimeoutEvent> timeoutBuffer = new FifoWindow<>();
+
+	// RTT ESTIMATION
+	private double RTO = 3;
+	private double SRTT = 0;
+	private double RTTVAR = 0;
+
+
 
 	SelectiveRepeatProtocol(IPHost host) {
 		this.host= host;
@@ -118,6 +123,8 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 				logMSG("ACK LOST");
 			}
 			else if(msg.getNum() >=send_base && msg.getNum() <= send_base+ cwnd -1) { // si le packet est bien dans la fenetre d'envoi
+
+				computeRTO(msg.getNum());
 
 				////////////////////////////////////congestion control/////////////////////////////////////////////
 
@@ -202,7 +209,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 				// ajoute paquet dans la fenetre
 				sendingWindow.add(msg);
 				// ajoute un timeout
-//				timeoutBuffer.add(new TimeoutEvent(scheduler,TIMEOUT,msg.num,this));
+//				timeoutBuffer.add(new TimeoutEvent(scheduler,RTO,msg.num,this));
 //				timeoutBuffer.tail.data.start();
 
 //				System.out.println("=============================================\n"+timeoutBuffer);
@@ -233,7 +240,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 
 //			if(timeoutBuffer.get(n-send_base)!=null)
 //				timeoutBuffer.get(n-send_base).stop();
-			TimeoutEvent tmp = new TimeoutEvent(scheduler,TIMEOUT,n,this);
+			TimeoutEvent tmp = new TimeoutEvent(scheduler, RTO,n,this);
 			timeoutBuffer.setData(tmp,n-send_base);
 			tmp.start(); // remets le timer
 //			System.out.println(timeoutBuffer.get(n-send_base));
@@ -245,10 +252,10 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	void reSend(int n) throws  Exception{
 		System.out.println("Resend packet :"+sendingWindow.get(n-send_base));
 		host.getIPLayer().send(IPAddress.ANY, dst, IP_PROTO_SR, sendingWindow.get(n-send_base));
-		TimeoutEvent tmp = new TimeoutEvent(scheduler,TIMEOUT,n,this);
+		TimeoutEvent tmp = new TimeoutEvent(scheduler, RTO,n,this);
 		timeoutBuffer.setData(tmp,n-send_base);
 		tmp.start(); // remets le timer
-		/*timeoutBuffer.setData(new TimeoutEvent(scheduler,TIMEOUT,n,this),n-send_base);
+		/*timeoutBuffer.setData(new TimeoutEvent(scheduler,RTO,n,this),n-send_base);
 		timeoutBuffer.get(n-send_base).start(); // remets le timer*/
 	}
 
@@ -343,6 +350,36 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	{
 		CongestionControl additiveIncrease = new AdditiveIncrease(this);
 		this.control = additiveIncrease ;
+	}
+
+	/**
+	 * Mets a jour le RTO lors d'un timeout
+	 */
+	void timeoutRTO(){
+		RTO=RTO*2;
+	}
+
+	/**
+	 * Recalcul le RTO lors d'un RTT
+	 */
+	void computeRTO(int id) {
+		if (timeoutBuffer.get(id - send_base) != null) {
+			double RI = timeoutBuffer.get(id - send_base).getTimeDiff();
+			if (SRTT == 0) {
+				SRTT = RI;
+				System.out.println("DAAAAAAAAAAAAAAAAAAAAAAAAAAAAA " + SRTT + " fdffefre " + scheduler.getCurrentTime());
+			} else {
+				SRTT = (0.875 * SRTT) + (0.125 * RI);
+				System.out.println("DAAAAAAAAAAAAAAAAAAAAAAAAAAAAA " + SRTT + " fdffefre " + scheduler.getCurrentTime());
+			}
+			if (RTTVAR == 0) {
+				RTTVAR = RI / 2;
+			} else {
+				RTTVAR = (0.750 * RTTVAR) + (0.250 * Math.abs(SRTT - RI));
+			}
+			RTO = SRTT + (4 * RTTVAR);
+			System.out.println("RTOOOOOOOOOO " + RTO);
+		}
 	}
 }
 

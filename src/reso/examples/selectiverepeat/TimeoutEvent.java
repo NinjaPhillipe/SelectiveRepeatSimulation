@@ -41,6 +41,8 @@ public class TimeoutEvent extends AbstractTimer {
         if(!canRun || protocol.getSend_base()>id) {
             System.out.println("\n TIMEOUT BROKEN");
         }else {
+            protocol.timeoutRTO();
+
             canRun=false;
             protocol.logMSG("TIMEOUT PAQUET " + id );
             System.out.println("//////////////////////////////TIMEOUT paquet :" + id+ "  timer : "+ok);
