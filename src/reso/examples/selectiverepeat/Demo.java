@@ -22,8 +22,11 @@ public class Demo
 	/* Enable or disable packet capture (can be used to observe ARP messages) */
 	private static final boolean ENABLE_SNIFFER= false;
 
+	private static int BITRATE = 100000;
+
 	static FileWriter windowSize;
 	static FileWriter logMsg;
+	static FileWriter rtoLog;
 
 	/**
 	 * Méthode qui se charge de lancer l démonstration de l'implémentation du partocole sélective repeat
@@ -42,6 +45,10 @@ public class Demo
 			File file2 = new File("SRlog.log");
 			file2.createNewFile();
 			logMsg = new FileWriter(file2);
+
+			File file3 = new File("RTO.log");
+			file3.createNewFile();
+			rtoLog = new FileWriter(file3);
 		}catch (IOException e){
 			e.printStackTrace();
 		}
@@ -70,7 +77,7 @@ public class Demo
     		EthernetInterface h2_eth0= (EthernetInterface) host2.getInterfaceByName("eth0");
     		
     		// Connect both interfaces with a 5000km long link
-    		new Link<EthernetFrame>(h1_eth0, h2_eth0, 5000000, 100000);
+    		new Link<EthernetFrame>(h1_eth0, h2_eth0, 5000000, BITRATE);
 
 			// ligne a décommenter si la requete arp n'a pas su s'effectuer
 
@@ -88,6 +95,7 @@ public class Demo
 
 			logMsg.close();
 			windowSize.close();
+			rtoLog.close();
 
 		} catch (Exception e) {
     		System.err.println(e.getMessage());

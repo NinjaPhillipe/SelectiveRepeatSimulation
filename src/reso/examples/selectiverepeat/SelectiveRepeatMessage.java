@@ -21,10 +21,7 @@ implements Message {
 		this(num);
 		data = data_;
 	}
-//	public SelectiveRepeatMessage(int num , boolean isAck_) {
-//		this(num);
-//		isAck = isAck_;
-//	}
+
 	SelectiveRepeatMessage(int num, int exceptedSeq_) {
 		this(num);
 		isAck = true;

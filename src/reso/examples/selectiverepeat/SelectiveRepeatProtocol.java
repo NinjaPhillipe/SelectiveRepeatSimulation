@@ -357,6 +357,7 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	 */
 	void timeoutRTO(){
 		RTO=RTO*2;
+		logRTO();
 	}
 
 	/**
@@ -365,20 +366,28 @@ public class SelectiveRepeatProtocol implements IPInterfaceListener {
 	void computeRTO(int id) {
 		if (timeoutBuffer.get(id - send_base) != null) {
 			double RI = timeoutBuffer.get(id - send_base).getTimeDiff();
-			if (SRTT == 0) {
+
+			if (SRTT == 0)
 				SRTT = RI;
-				System.out.println("DAAAAAAAAAAAAAAAAAAAAAAAAAAAAA " + SRTT + " fdffefre " + scheduler.getCurrentTime());
-			} else {
+			else
 				SRTT = (0.875 * SRTT) + (0.125 * RI);
-				System.out.println("DAAAAAAAAAAAAAAAAAAAAAAAAAAAAA " + SRTT + " fdffefre " + scheduler.getCurrentTime());
-			}
-			if (RTTVAR == 0) {
+
+			if (RTTVAR == 0)
 				RTTVAR = RI / 2;
-			} else {
+			else
 				RTTVAR = (0.750 * RTTVAR) + (0.250 * Math.abs(SRTT - RI));
-			}
+
 			RTO = SRTT + (4 * RTTVAR);
-			System.out.println("RTOOOOOOOOOO " + RTO);
+			logRTO();
+		}
+	}
+
+	private void logRTO(){
+		try {
+			Demo.rtoLog.write(scheduler.getCurrentTime()+"  "+RTO+"\n");
+
+		}catch (Exception e){
+			e.printStackTrace();
 		}
 	}
 }
